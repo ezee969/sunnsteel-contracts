@@ -1,9 +1,6 @@
 // Shared domain contracts for Sunnsteel
 // Runtime-free, browser-safe, type-first exports
 
-export const PROGRAM_STYLES = ['STANDARD', 'HYPERTROPHY'] as const;
-export type ProgramStyle = (typeof PROGRAM_STYLES)[number];
-
 export const WORKOUT_SESSION_STATUSES = [
   'IN_PROGRESS',
   'COMPLETED',

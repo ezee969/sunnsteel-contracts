@@ -1,7 +1,6 @@
 import type {
   IsoDateString,
   MuscleGroup,
-  ProgramStyle,
   ProgressionScheme,
   RepType,
 } from './shared';
@@ -25,9 +24,6 @@ export interface RoutineExercise {
   note?: string | null;
   progressionScheme: ProgressionScheme;
   minWeightIncrement: number;
-  programTMKg?: number;
-  programRoundingKg?: number;
-  programStyle?: ProgramStyle;
   exercise: {
     id: string;
     name: string;
@@ -44,9 +40,6 @@ export interface CreateRoutineExerciseInput {
   note?: string;
   progressionScheme: ProgressionScheme;
   minWeightIncrement: number;
-  programTMKg?: number;
-  programRoundingKg?: number;
-  programStyle?: ProgramStyle;
   sets: RoutineSet[];
 }
 
@@ -71,13 +64,6 @@ export interface Routine {
   isPeriodized: boolean;
   isFavorite: boolean;
   isCompleted: boolean;
-  programStyle?: ProgramStyle;
-  programWithDeloads?: boolean;
-  programDurationWeeks?: number;
-  programStartWeek?: number;
-  programStartDate?: IsoDateString;
-  programEndDate?: IsoDateString;
-  programTimezone?: string;
   days: RoutineDay[];
   createdAt: IsoDateString;
   updatedAt: IsoDateString;
@@ -87,11 +73,6 @@ export interface CreateRoutineRequest {
   name: string;
   description?: string;
   isPeriodized: boolean;
-  programWithDeloads?: boolean;
-  programStartDate?: IsoDateString;
-  programTimezone?: string;
-  programStartWeek?: number;
-  programStyle?: ProgramStyle;
   days: CreateRoutineDayInput[];
 }
 
