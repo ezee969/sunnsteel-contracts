@@ -1,0 +1,18 @@
+# dependencies
+/node_modules
+
+# build output
+/dist
+
+# typescript
+*.tsbuildinfo
+
+# env files
+.env*
+
+# logs
+npm-debug.log*
+*.log
+
+# misc
+.DS_Store

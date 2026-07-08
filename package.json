@@ -1,0 +1,40 @@
+{
+  "name": "@sunsteel/contracts",
+  "version": "0.3.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ezee969/sunsteel-contracts.git"
+  },
+  "private": false,
+  "engines": {
+    "node": ">=20.11"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
+    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "npm run typecheck",
+    "verify": "npm run typecheck && npm run build",
+    "verify:security": "npm audit",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.3"
+  }
+}
