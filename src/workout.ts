@@ -36,16 +36,6 @@ export interface WorkoutSession {
   notes?: string | null;
   lastActivityAt?: IsoDateString | null;
   setLogs?: SetLog[];
-  program?: {
-    currentWeek: number;
-    durationWeeks: number;
-    withDeloads: boolean;
-    isDeloadWeek: boolean;
-    startDate: IsoDateString;
-    endDate: IsoDateString;
-    timeZone: string;
-  };
-  rtfPlans?: unknown[];
   reused?: boolean;
   routine?: {
     id: string;
@@ -97,8 +87,6 @@ export interface StartWorkoutResponse {
   status: WorkoutSessionStatus;
   startedAt: IsoDateString;
   endedAt?: IsoDateString | null;
-  program?: WorkoutSession['program'];
-  rtfPlans?: WorkoutSession['rtfPlans'];
   reused: boolean;
 }
 

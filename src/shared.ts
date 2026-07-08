@@ -24,8 +24,6 @@ export const PROGRESSION_SCHEMES = [
   'NONE',
   'DOUBLE_PROGRESSION',
   'DYNAMIC_DOUBLE_PROGRESSION',
-  'PROGRAMMED_RTF',
-  'PROGRAMMED_RTF_HYPERTROPHY',
 ] as const;
 export type ProgressionScheme = (typeof PROGRESSION_SCHEMES)[number];
 

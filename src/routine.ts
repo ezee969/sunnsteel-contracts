@@ -5,7 +5,6 @@ import type {
   ProgressionScheme,
   RepType,
 } from './shared';
-import type { RtfWeekGoals } from './rtf';
 
 // Routine contracts -------------------------------------------------------
 
@@ -79,7 +78,6 @@ export interface Routine {
   programStartDate?: IsoDateString;
   programEndDate?: IsoDateString;
   programTimezone?: string;
-  rtfGoals?: RtfWeekGoals;
   days: RoutineDay[];
   createdAt: IsoDateString;
   updatedAt: IsoDateString;
