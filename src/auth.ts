@@ -2,7 +2,7 @@ import type {
   IsoDateString,
   WeightUnit,
 } from './shared';
-
+// 
 // Auth contracts ----------------------------------------------------------
 
 export interface SupabaseAuthUser {
