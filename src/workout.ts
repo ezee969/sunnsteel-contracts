@@ -136,3 +136,18 @@ export interface ListSessionsParams {
 }
 
 export type WorkoutSessionListResponse = PaginatedResponse<WorkoutSessionSummary>;
+
+// Workout statistics contracts --------------------------------------------
+
+export interface WorkoutStatsQuery {
+  weekStart: IsoDateString;
+  weekEnd: IsoDateString;
+  timeZone: string;
+}
+
+export interface WorkoutStatsResponse {
+  totalCompleted: number;
+  completionRate: number;
+  weeklyWorkoutsCount: number;
+  activeDaysThisWeek: number;
+}
