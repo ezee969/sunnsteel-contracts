@@ -76,6 +76,7 @@ export interface WorkoutSession {
 
 /** Completed set from the latest earlier execution of the same routine day. */
 export interface PreviousSetPerformance {
+  routineExerciseId: string;
   exerciseId: string;
   setNumber: number;
   reps: number;
