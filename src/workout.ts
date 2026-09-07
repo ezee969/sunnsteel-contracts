@@ -74,6 +74,22 @@ export interface WorkoutSession {
   };
 }
 
+/** Completed set from the latest earlier execution of the same routine day. */
+export interface PreviousSetPerformance {
+  exerciseId: string;
+  setNumber: number;
+  reps: number;
+  weight?: number | null;
+  rpe?: number | null;
+}
+
+/** Stable successful response of GET /workouts/sessions/:id/previous-performance. */
+export interface PreviousPerformanceResponse {
+  sessionId: string;
+  endedAt: IsoDateString;
+  sets: PreviousSetPerformance[];
+}
+
 export interface StartWorkoutRequest {
   routineId: string;
   routineDayId: string;
