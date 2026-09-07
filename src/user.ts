@@ -7,6 +7,7 @@ import type {
 // User contracts ----------------------------------------------------------
 
 export interface UserProfile {
+  timeZone?: string | null;
   id: string;
   email: string;
   name: string;
