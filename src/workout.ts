@@ -124,6 +124,29 @@ export interface UpsertSetLogRequest {
   isCompleted?: boolean;
 }
 
+export type PersonalRecordKind =
+  | 'WEIGHT'
+  | 'REPS'
+  | 'VOLUME'
+  | 'ESTIMATED_1RM';
+
+/** A record frontier crossed by the set mutation that produced this response. */
+export interface EarnedPersonalRecord {
+  kind: PersonalRecordKind;
+  exerciseId: string;
+  exerciseName: string;
+  /** Canonical kg for every kind except REPS, where this is a repetition count. */
+  value: number;
+  /** Missing when this is the first completed result for that record kind. */
+  previousBest?: number | null;
+}
+
+/** Stable successful response of PUT /workouts/sessions/:id/set-logs. */
+export interface UpsertSetLogResponse {
+  setLog: SetLog;
+  earnedRecords: EarnedPersonalRecord[];
+}
+
 export interface WorkoutSessionSummary {
   id: string;
   status: WorkoutSessionStatus;
