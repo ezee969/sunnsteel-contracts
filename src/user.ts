@@ -47,6 +47,37 @@ export interface UpdateProfileRequest {
   weightUnit?: WeightUnit;
 }
 
+// Equipment preferences -------------------------------------------------
+
+export interface PlatePairInventory {
+  weightKg: number;
+  pairCount: number;
+}
+
+export interface TrainingLocationPreference {
+  id: string;
+  name: string;
+  isDefault: boolean;
+  barWeightKg: number;
+  availablePlatePairs: PlatePairInventory[];
+  equipment: string[];
+  createdAt: IsoDateString;
+  updatedAt: IsoDateString;
+}
+
+export interface TrainingLocationPreferenceInput {
+  id?: string;
+  name: string;
+  isDefault: boolean;
+  barWeightKg: number;
+  availablePlatePairs: PlatePairInventory[];
+  equipment: string[];
+}
+
+export interface ReplaceTrainingLocationsRequest {
+  locations: TrainingLocationPreferenceInput[];
+}
+
 export interface UserSearchResponse {
   id: string;
   email: string;
