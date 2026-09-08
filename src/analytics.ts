@@ -1,5 +1,12 @@
 import type { WorkoutSession } from './workout';
 
+export const TRAINING_EVENT_TYPES = [
+  'SESSION_COMPLETED',
+  'PERSONAL_RECORD',
+  'PROGRESSION_CHANGED',
+] as const;
+export type TrainingEventType = (typeof TRAINING_EVENT_TYPES)[number];
+
 /** Stable successful response of GET /workouts/progress. */
 export interface WorkoutProgressQuery { timeZone: string }
 export interface PersonalRecordEntry {

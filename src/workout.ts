@@ -114,6 +114,38 @@ export interface FinishWorkoutRequest {
   notes?: string;
 }
 
+export type ProgressionRule =
+  | 'ALL_SETS_REACHED_TARGET'
+  | 'SET_REACHED_TARGET';
+
+export interface ProgressionSetChange {
+  setNumber: number;
+  targetReps: number;
+  performedReps: number;
+  previousWeightKg: number;
+  newWeightKg: number;
+}
+
+/** An automatic prescription update produced while completing a session. */
+export interface ProgressionChange {
+  routineExerciseId: string;
+  exerciseId: string;
+  exerciseName: string;
+  progressionScheme: Extract<
+    ProgressionScheme,
+    'DOUBLE_PROGRESSION' | 'DYNAMIC_DOUBLE_PROGRESSION'
+  >;
+  rule: ProgressionRule;
+  minWeightIncrementKg: number;
+  sets: ProgressionSetChange[];
+}
+
+/** Stable successful response of PATCH /workouts/sessions/:id/finish. */
+export interface FinishWorkoutResponse {
+  session: WorkoutSession;
+  progressionChanges: ProgressionChange[];
+}
+
 export interface UpsertSetLogRequest {
   routineExerciseId: string;
   exerciseId: string;
