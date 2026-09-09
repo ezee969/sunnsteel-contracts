@@ -3,6 +3,7 @@ import type {
   Sex,
   WeightUnit,
 } from './shared';
+import type { PersonalRecordEntry } from './analytics';
 
 // User contracts ----------------------------------------------------------
 
@@ -43,6 +44,43 @@ export const RESERVED_USERNAMES = [
   'workouts',
 ] as const;
 
+export const PROFILE_VISIBILITY_VALUES = [
+  'PUBLIC',
+  'FOLLOWERS',
+  'PRIVATE',
+] as const;
+export type ProfileVisibility = (typeof PROFILE_VISIBILITY_VALUES)[number];
+
+export interface ProfilePrivacySettings {
+  workoutHistory: ProfileVisibility;
+  records: ProfileVisibility;
+  routines: ProfileVisibility;
+  achievements: ProfileVisibility;
+  bodyMetrics: ProfileVisibility;
+}
+
+export interface ProfileViewerAccess {
+  workoutHistory: boolean;
+  records: boolean;
+  routines: boolean;
+  achievements: boolean;
+  bodyMetrics: boolean;
+}
+
+export interface PublicTrainingSummary {
+  completedWorkouts: number;
+  totalVolumeKg: number;
+  currentStreakDays: number;
+  bestStreakDays: number;
+}
+
+export interface PublicBodyMetrics {
+  age?: number | null;
+  sex?: Sex | null;
+  weightKg?: number | null;
+  heightCm?: number | null;
+}
+
 export interface UserProfile {
   timeZone?: string | null;
   id: string;
@@ -56,6 +94,7 @@ export interface UserProfile {
   weight?: number | null;
   height?: number | null;
   weightUnit: WeightUnit;
+  privacySettings: ProfilePrivacySettings;
   followerCount: number;
   followingCount: number;
   createdAt: IsoDateString;
@@ -73,6 +112,10 @@ export interface PublicUserProfile {
   followerCount: number;
   followingCount: number;
   isFollowedByMe: boolean;
+  viewerAccess: ProfileViewerAccess;
+  trainingSummary?: PublicTrainingSummary;
+  personalRecords?: PersonalRecordEntry[];
+  bodyMetrics?: PublicBodyMetrics;
 }
 
 export interface UpdateProfileRequest {
@@ -86,6 +129,8 @@ export interface UpdateProfileRequest {
   height?: number | null;
   weightUnit?: WeightUnit;
 }
+
+export type UpdateProfilePrivacyRequest = ProfilePrivacySettings;
 
 // Equipment preferences -------------------------------------------------
 
