@@ -11,6 +11,8 @@ export const USERNAME_MIN_LENGTH = 3;
 export const USERNAME_MAX_LENGTH = 30;
 export const USERNAME_PATTERN_SOURCE =
   '^[a-z0-9][a-z0-9_-]{1,28}[a-z0-9]$';
+export const PROFILE_BIO_MAX_LENGTH = 500;
+export const PROFILE_LOCATION_MAX_LENGTH = 100;
 export const RESERVED_USERNAMES = [
   'achievements',
   'admin',
@@ -52,6 +54,8 @@ export const PROFILE_VISIBILITY_VALUES = [
 export type ProfileVisibility = (typeof PROFILE_VISIBILITY_VALUES)[number];
 
 export interface ProfilePrivacySettings {
+  biography: ProfileVisibility;
+  location: ProfileVisibility;
   workoutHistory: ProfileVisibility;
   records: ProfileVisibility;
   routines: ProfileVisibility;
@@ -60,6 +64,8 @@ export interface ProfilePrivacySettings {
 }
 
 export interface ProfileViewerAccess {
+  biography: boolean;
+  location: boolean;
   workoutHistory: boolean;
   records: boolean;
   routines: boolean;
@@ -89,6 +95,8 @@ export interface UserProfile {
   name: string;
   lastName?: string | null;
   avatarUrl?: string | null;
+  bio?: string | null;
+  location?: string | null;
   age?: number | null;
   sex?: Sex | null;
   weight?: number | null;
@@ -107,6 +115,8 @@ export interface PublicUserProfile {
   name: string;
   lastName?: string | null;
   avatarUrl?: string | null;
+  bio?: string | null;
+  location?: string | null;
   createdAt: IsoDateString;
   updatedAt: IsoDateString;
   followerCount: number;
@@ -123,6 +133,8 @@ export interface UpdateProfileRequest {
   name?: string;
   lastName?: string | null;
   avatarUrl?: string | null;
+  bio?: string | null;
+  location?: string | null;
   age?: number | null;
   sex?: Sex | null;
   weight?: number | null;
@@ -130,7 +142,11 @@ export interface UpdateProfileRequest {
   weightUnit?: WeightUnit;
 }
 
-export type UpdateProfilePrivacyRequest = ProfilePrivacySettings;
+export type UpdateProfilePrivacyRequest = Omit<
+  ProfilePrivacySettings,
+  'biography' | 'location'
+> &
+  Partial<Pick<ProfilePrivacySettings, 'biography' | 'location'>>;
 
 // Equipment preferences -------------------------------------------------
 
