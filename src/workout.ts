@@ -144,6 +144,7 @@ export interface ProgressionChange {
 export interface FinishWorkoutResponse {
   session: WorkoutSession;
   progressionChanges: ProgressionChange[];
+  recap: WorkoutSessionRecap | null;
 }
 
 export interface UpsertSetLogRequest {
@@ -177,6 +178,40 @@ export interface EarnedPersonalRecord {
 export interface UpsertSetLogResponse {
   setLog: SetLog;
   earnedRecords: EarnedPersonalRecord[];
+}
+
+/** Final record frontier earned by one completed session. */
+export interface SessionRecapRecord extends EarnedPersonalRecord {
+  setNumber: number;
+  achievedAt: IsoDateString;
+}
+
+/** Metrics from the latest earlier execution of the same routine day. */
+export interface PreviousSessionRecap {
+  sessionId: string;
+  endedAt: IsoDateString;
+  durationSec: number;
+  totalVolumeKg: number;
+  completedSets: number;
+  durationDeltaSec: number;
+  volumeDeltaKg: number;
+  completedSetsDelta: number;
+}
+
+/** Stable successful response of GET /workouts/sessions/:id/recap. */
+export interface WorkoutSessionRecap {
+  sessionId: string;
+  routineName: string;
+  dayName?: string | null;
+  startedAt: IsoDateString;
+  endedAt: IsoDateString;
+  durationSec: number;
+  totalVolumeKg: number;
+  completedSets: number;
+  notes?: string | null;
+  records: SessionRecapRecord[];
+  progressionChanges: ProgressionChange[];
+  previousSession: PreviousSessionRecap | null;
 }
 
 export interface WorkoutSessionSummary {
