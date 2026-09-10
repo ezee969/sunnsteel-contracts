@@ -120,6 +120,12 @@ export interface ProfilePrivacySettings {
   bodyMetrics: ProfileVisibility;
 }
 
+export interface ProfileDiscoverySettings {
+  discoverableByName: boolean;
+  discoverableByUsername: boolean;
+  discoverableByContacts: boolean;
+}
+
 export interface ProfileViewerAccess {
   biography: boolean;
   location: boolean;
@@ -162,6 +168,7 @@ export interface UserProfile {
   height?: number | null;
   weightUnit: WeightUnit;
   privacySettings: ProfilePrivacySettings;
+  discoverySettings: ProfileDiscoverySettings;
   followerCount: number;
   followingCount: number;
   createdAt: IsoDateString;
@@ -214,6 +221,8 @@ export type UpdateProfilePrivacyRequest = Omit<
   Partial<
     Pick<ProfilePrivacySettings, 'biography' | 'location' | 'trainingIdentity'>
   >;
+
+export type UpdateProfileDiscoveryRequest = ProfileDiscoverySettings;
 
 // Equipment preferences -------------------------------------------------
 
