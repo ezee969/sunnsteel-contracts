@@ -36,6 +36,42 @@ export interface WorkoutProgressResponse {
   recentActivity: RecentActivityEntry[];
 }
 
+export interface ExerciseStrengthTrendQuery {
+  exerciseId?: string;
+  from?: string;
+  to?: string;
+}
+
+export interface ExerciseStrengthSummary {
+  exerciseId: string;
+  exerciseName: string;
+  weightKg: number;
+  reps: number;
+  estimated1rmKg: number;
+  achievedAt: string;
+}
+
+export interface ExerciseStrengthTrendPoint {
+  sessionId: string;
+  achievedAt: string;
+  weightKg: number;
+  reps: number;
+  estimated1rmKg: number;
+}
+
+/** Stable successful response of GET /workouts/progress/strength. */
+export interface ExerciseStrengthTrendResponse {
+  exercises: ExerciseStrengthSummary[];
+  selectedExercise: ExerciseStrengthSummary | null;
+  range: {
+    from: string | null;
+    to: string;
+  };
+  baseline: ExerciseStrengthTrendPoint | null;
+  points: ExerciseStrengthTrendPoint[];
+  truncated: boolean;
+}
+
 /** Immutable prescription captured before any sets or progression. */
 export interface WorkoutSessionSnapshotV1 {
   schemaVersion: 1;
