@@ -1,5 +1,10 @@
 import type { ProgressionChange, WorkoutSession } from './workout';
-import type { ProgressionScheme, RepType, WorkoutSessionStatus } from './shared';
+import type {
+  MuscleGroup,
+  ProgressionScheme,
+  RepType,
+  WorkoutSessionStatus,
+} from './shared';
 
 export const TRAINING_EVENT_TYPES = [
   'SESSION_COMPLETED',
@@ -135,6 +140,32 @@ export interface ExercisePerformanceHistoryResponse {
   selectedExercise: ExercisePerformanceSummary | null;
   items: ExercisePerformanceSession[];
   nextCursor?: string;
+}
+
+export interface MuscleGroupHeatmapQuery {
+  timeZone: string;
+  /** Number of Monday-based calendar weeks to return, including this week. */
+  weeks?: number;
+}
+
+export interface MuscleGroupHeatmapValue {
+  muscle: MuscleGroup;
+  /** Completed-set equivalents: primary muscles count 1, secondary count 0.5. */
+  weightedSets: number;
+}
+
+export interface MuscleGroupHeatmapWeek {
+  weekStart: string;
+  isCurrentWeek: boolean;
+  totalWeightedSets: number;
+  muscles: MuscleGroupHeatmapValue[];
+}
+
+/** Stable successful response of GET /workouts/progress/muscles. */
+export interface MuscleGroupHeatmapResponse {
+  timeZone: string;
+  weeks: MuscleGroupHeatmapWeek[];
+  peakWeightedSets: number;
 }
 
 /** Immutable prescription captured before any sets or progression. */
