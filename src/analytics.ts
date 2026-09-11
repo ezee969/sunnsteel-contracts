@@ -168,6 +168,42 @@ export interface MuscleGroupHeatmapResponse {
   peakWeightedSets: number;
 }
 
+export interface VolumeTrendQuery {
+  timeZone: string;
+  /** Number of Monday-based calendar weeks to return, including this week. */
+  weeks?: number;
+}
+
+export interface VolumeTrendPoint {
+  weekStart: string;
+  isCurrentWeek: boolean;
+  /** External-load volume in canonical kilograms: weight × repetitions. */
+  volumeKg: number;
+  completedSets: number;
+}
+
+export interface VolumeTrendSeries {
+  id: string;
+  name: string;
+  totalVolumeKg: number;
+  totalCompletedSets: number;
+  points: VolumeTrendPoint[];
+}
+
+export interface MuscleVolumeTrendSeries extends VolumeTrendSeries {
+  id: MuscleGroup;
+}
+
+/** Stable successful response of GET /workouts/progress/volume. */
+export interface VolumeTrendResponse {
+  timeZone: string;
+  weeks: number;
+  overall: VolumeTrendPoint[];
+  muscles: MuscleVolumeTrendSeries[];
+  routines: VolumeTrendSeries[];
+  exercises: VolumeTrendSeries[];
+}
+
 /** Immutable prescription captured before any sets or progression. */
 export interface WorkoutSessionSnapshotV1 {
   schemaVersion: 1;
