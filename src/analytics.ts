@@ -1,4 +1,5 @@
-import type { WorkoutSession } from './workout';
+import type { ProgressionChange, WorkoutSession } from './workout';
+import type { ProgressionScheme, RepType, WorkoutSessionStatus } from './shared';
 
 export const TRAINING_EVENT_TYPES = [
   'SESSION_COMPLETED',
@@ -70,6 +71,70 @@ export interface ExerciseStrengthTrendResponse {
   baseline: ExerciseStrengthTrendPoint | null;
   points: ExerciseStrengthTrendPoint[];
   truncated: boolean;
+}
+
+export interface ExercisePerformanceHistoryQuery {
+  exerciseId?: string;
+  from?: string;
+  to?: string;
+  cursor?: string;
+  limit?: number;
+}
+
+export interface ExercisePerformanceSummary {
+  exerciseId: string;
+  exerciseName: string;
+  lastPerformedAt: string;
+  hasStrengthTrend: boolean;
+}
+
+export interface ExercisePerformanceSet {
+  routineExerciseId: string;
+  setNumber: number;
+  reps: number;
+  weightKg?: number | null;
+  rpe?: number | null;
+}
+
+export interface ExercisePerformancePrescriptionSet {
+  setNumber: number;
+  repType: RepType;
+  reps?: number | null;
+  minReps?: number | null;
+  maxReps?: number | null;
+  weightKg?: number | null;
+  rir?: number | null;
+}
+
+export interface ExercisePerformancePrescription {
+  routineExerciseId: string;
+  restSeconds?: number | null;
+  note?: string | null;
+  progressionScheme: ProgressionScheme;
+  minWeightIncrementKg: number;
+  sets: ExercisePerformancePrescriptionSet[];
+}
+
+export interface ExercisePerformanceSession {
+  sessionId: string;
+  status: Extract<WorkoutSessionStatus, 'COMPLETED' | 'ABORTED'>;
+  routineName: string;
+  dayName?: string | null;
+  startedAt: string;
+  endedAt: string;
+  durationSec?: number | null;
+  sessionNotes?: string | null;
+  sets: ExercisePerformanceSet[];
+  prescriptions: ExercisePerformancePrescription[];
+  progressionChanges: ProgressionChange[];
+}
+
+/** Stable successful response of GET /workouts/progress/performance. */
+export interface ExercisePerformanceHistoryResponse {
+  exercises: ExercisePerformanceSummary[];
+  selectedExercise: ExercisePerformanceSummary | null;
+  items: ExercisePerformanceSession[];
+  nextCursor?: string;
 }
 
 /** Immutable prescription captured before any sets or progression. */
