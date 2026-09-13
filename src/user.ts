@@ -262,3 +262,63 @@ export interface UserSearchResponse {
   lastName?: string | null;
   avatarUrl?: string | null;
 }
+
+// Relationship lists ----------------------------------------------------
+
+/**
+ * `followers` and `following` are the profile's own relations. `mutuals` is
+ * relative to the viewer: accounts that follow the profile and that the viewer
+ * follows. On the viewer's own profile that is the set of mutual follows.
+ */
+export const RELATIONSHIP_LIST_KINDS = [
+  'followers',
+  'following',
+  'mutuals',
+] as const;
+export type RelationshipListKind = (typeof RELATIONSHIP_LIST_KINDS)[number];
+
+export const RELATIONSHIP_LIST_DEFAULT_LIMIT = 20;
+export const RELATIONSHIP_LIST_MAX_LIMIT = 50;
+export const FOLLOW_SUGGESTIONS_DEFAULT_LIMIT = 10;
+export const FOLLOW_SUGGESTIONS_MAX_LIMIT = 20;
+
+/** A member as seen by the signed-in viewer. Never carries email. */
+export interface RelationshipMember extends UserSearchResponse {
+  isFollowedByMe: boolean;
+  followsMe: boolean;
+}
+
+export interface RelationshipListQuery {
+  /** Opaque value returned as `nextCursor` by the previous page. */
+  cursor?: string;
+  limit?: number;
+}
+
+/**
+ * Stable successful response of GET /users/:identifier/followers, /following
+ * and /mutuals. Items are ordered by the date the relation was created, newest
+ * first.
+ */
+export interface RelationshipListResponse {
+  kind: RelationshipListKind;
+  items: RelationshipMember[];
+  nextCursor?: string;
+}
+
+export const FOLLOW_SUGGESTION_REASONS = [
+  'FOLLOWS_YOU',
+  'FOLLOWED_BY_PEOPLE_YOU_FOLLOW',
+] as const;
+export type FollowSuggestionReason =
+  (typeof FOLLOW_SUGGESTION_REASONS)[number];
+
+export interface FollowSuggestion extends RelationshipMember {
+  reason: FollowSuggestionReason;
+  /** How many accounts the viewer follows also follow this member. */
+  mutualCount: number;
+}
+
+/** Stable successful response of GET /users/me/suggestions. */
+export interface FollowSuggestionsResponse {
+  items: FollowSuggestion[];
+}
