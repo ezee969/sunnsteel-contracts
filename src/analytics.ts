@@ -1,5 +1,6 @@
 import type { ProgressionChange, WorkoutSession } from './workout';
 import type {
+  IsoDateString,
   MuscleGroup,
   ProgressionScheme,
   RepType,
@@ -202,6 +203,57 @@ export interface VolumeTrendResponse {
   muscles: MuscleVolumeTrendSeries[];
   routines: VolumeTrendSeries[];
   exercises: VolumeTrendSeries[];
+}
+
+export interface SessionComparisonQuery {
+  routineDayId?: string;
+}
+
+export interface SessionComparisonRoutineDay {
+  routineDayId: string;
+  routineId: string;
+  routineName: string;
+  dayName?: string | null;
+  lastCompletedAt: IsoDateString;
+  completedSessionCount: number;
+}
+
+export interface SessionComparisonSet {
+  routineExerciseId: string;
+  setNumber: number;
+  reps: number;
+  weightKg?: number | null;
+  rpe?: number | null;
+}
+
+export interface SessionComparisonExercise {
+  routineExerciseId: string;
+  exerciseId: string;
+  exerciseName: string;
+  order: number;
+  sets: SessionComparisonSet[];
+}
+
+export interface SessionComparisonSession {
+  sessionId: string;
+  routineDayId: string;
+  routineName: string;
+  dayName?: string | null;
+  startedAt: IsoDateString;
+  endedAt: IsoDateString;
+  durationSec: number;
+  totalVolumeKg: number;
+  completedSets: number;
+  notes?: string | null;
+  exercises: SessionComparisonExercise[];
+}
+
+/** Stable successful response of GET /workouts/progress/session-comparison. */
+export interface SessionComparisonResponse {
+  routineDays: SessionComparisonRoutineDay[];
+  selectedRoutineDay: SessionComparisonRoutineDay | null;
+  latestSession: SessionComparisonSession | null;
+  previousSession: SessionComparisonSession | null;
 }
 
 /** Immutable prescription captured before any sets or progression. */
