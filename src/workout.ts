@@ -4,6 +4,7 @@ import type {
   PaginatedResponse,
   ProgressionScheme,
   RepType,
+  WeightUnit,
   WorkoutSessionStatus,
 } from './shared';
 
@@ -212,6 +213,76 @@ export interface WorkoutSessionRecap {
   records: SessionRecapRecord[];
   progressionChanges: ProgressionChange[];
   previousSession: PreviousSessionRecap | null;
+}
+
+// Session sharing (SOC-07) -------------------------------------------------
+
+/** Parts of a completed session's recap the owner may choose to share. */
+export const SESSION_SHARE_FIELDS = [
+  'duration',
+  'volume',
+  'completedSets',
+  'records',
+  'progression',
+  'notes',
+] as const;
+export type SessionShareField = (typeof SESSION_SHARE_FIELDS)[number];
+
+/** Pre-selected when creating a link; notes and prescriptions are opt-in. */
+export const SESSION_SHARE_DEFAULT_FIELDS: SessionShareField[] = [
+  'duration',
+  'volume',
+  'completedSets',
+  'records',
+];
+
+export const SESSION_SHARE_MAX_ACTIVE_LINKS = 10;
+
+export interface CreateSessionShareRequest {
+  fields: SessionShareField[];
+}
+
+/** An active share link, visible only to the session owner. */
+export interface SessionShare {
+  id: string;
+  sessionId: string;
+  /** Unguessable identifier used in the public `/shared/sessions/:token` URL. */
+  token: string;
+  fields: SessionShareField[];
+  createdAt: IsoDateString;
+}
+
+/** Stable successful response of GET /workouts/sessions/:id/shares. */
+export interface SessionShareListResponse {
+  items: SessionShare[];
+}
+
+export interface SharedSessionOwner {
+  username: string;
+  name: string;
+  lastName?: string | null;
+  avatarUrl?: string | null;
+}
+
+/**
+ * Stable successful response of the unauthenticated
+ * GET /shared/sessions/:token. Only the fields named in `fields` are present;
+ * everything else is omitted rather than nulled. Weights are canonical kg and
+ * `weightUnit` is the owner's display preference.
+ */
+export interface SharedSessionRecap {
+  fields: SessionShareField[];
+  owner: SharedSessionOwner;
+  weightUnit: WeightUnit;
+  routineName: string;
+  dayName?: string | null;
+  endedAt: IsoDateString;
+  durationSec?: number;
+  totalVolumeKg?: number;
+  completedSets?: number;
+  records?: SessionRecapRecord[];
+  progressionChanges?: ProgressionChange[];
+  notes?: string | null;
 }
 
 export interface WorkoutSessionSummary {
