@@ -256,6 +256,68 @@ export interface SessionComparisonResponse {
   previousSession: SessionComparisonSession | null;
 }
 
+export const PROGRESS_TIMELINE_EVENT_TYPES = [
+  'PERSONAL_RECORD',
+  'PROGRESSION_CHANGED',
+] as const;
+export type ProgressTimelineEventType =
+  (typeof PROGRESS_TIMELINE_EVENT_TYPES)[number];
+
+export interface ProgressTimelineQuery {
+  type?: ProgressTimelineEventType;
+  cursor?: string;
+  limit?: number;
+}
+
+export interface ProgressTimelineSessionContext {
+  sessionId: string;
+  routineName: string;
+  dayName?: string | null;
+}
+
+export interface ProgressTimelineRecordPerformance {
+  weightKg: number;
+  reps: number;
+  estimated1rmKg: number;
+}
+
+export type ProgressTimelineRecordReason =
+  | 'FIRST_RECORDED_BEST'
+  | 'HEAVIER_LOAD'
+  | 'MORE_REPS_AT_SAME_LOAD';
+
+export interface ProgressTimelinePersonalRecordItem {
+  eventId: string;
+  type: 'PERSONAL_RECORD';
+  occurredAt: IsoDateString;
+  session: ProgressTimelineSessionContext;
+  exerciseId: string;
+  exerciseName: string;
+  current: ProgressTimelineRecordPerformance;
+  previous: ProgressTimelineRecordPerformance | null;
+  reason: ProgressTimelineRecordReason;
+}
+
+export interface ProgressTimelineProgressionItem {
+  eventId: string;
+  type: 'PROGRESSION_CHANGED';
+  occurredAt: IsoDateString;
+  session: ProgressTimelineSessionContext;
+  exerciseId: string;
+  exerciseName: string;
+  change: ProgressionChange;
+}
+
+export type ProgressTimelineItem =
+  | ProgressTimelinePersonalRecordItem
+  | ProgressTimelineProgressionItem;
+
+/** Stable successful response of GET /workouts/progress/timeline. */
+export interface ProgressTimelineResponse {
+  items: ProgressTimelineItem[];
+  nextCursor?: string;
+}
+
 /** Immutable prescription captured before any sets or progression. */
 export interface WorkoutSessionSnapshotV1 {
   schemaVersion: 1;
