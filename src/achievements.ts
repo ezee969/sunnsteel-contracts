@@ -167,6 +167,17 @@ export interface RenaissanceRankProgress {
   activeWeeksRemaining: number;
 }
 
+/**
+ * Current verified total and the next fixed catalog milestone for one category.
+ * A null next milestone means the category's finite catalog is complete.
+ */
+export interface AchievementCategoryProgress {
+  category: AchievementCategory;
+  currentValue: number;
+  nextMilestone: AchievementDefinition | null;
+  remaining: number;
+}
+
 /** Stable successful response of GET /achievements. */
 export interface AchievementsResponse {
   analyticsReady: boolean;
@@ -174,4 +185,5 @@ export interface AchievementsResponse {
   availableCount: number;
   achievements: EarnedAchievement[];
   rank: RenaissanceRankProgress | null;
+  milestoneProgress: AchievementCategoryProgress[];
 }
