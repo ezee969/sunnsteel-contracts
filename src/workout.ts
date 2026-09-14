@@ -37,6 +37,12 @@ export interface WorkoutSession {
   notes?: string | null;
   lastActivityAt?: IsoDateString | null;
   setLogs?: SetLog[];
+  /**
+   * LIVE-11: slots performed with a different exercise in this session. The
+   * routine day (snapshot) keeps the original prescription; set logs for a
+   * substituted slot carry the substitute's `exerciseId`.
+   */
+  exerciseSubstitutions?: SessionExerciseSubstitution[];
   reused?: boolean;
   routine?: {
     id: string;
@@ -156,6 +162,41 @@ export interface UpsertSetLogRequest {
   weight?: number;
   rpe?: number;
   isCompleted?: boolean;
+}
+
+/**
+ * LIVE-11: an exercise performed in place of one routine slot for a single
+ * session. The substitute's muscles are captured when the swap is made, so
+ * later catalog changes cannot rewrite what the session trained.
+ */
+export interface SessionExerciseSubstitution {
+  /** The replaced slot, as in `routineDay.exercises[].id`. */
+  routineExerciseId: string;
+  exercise: {
+    id: string;
+    name: string;
+    primaryMuscles: MuscleGroup[];
+    secondaryMuscles: MuscleGroup[];
+  };
+  substitutedAt: IsoDateString;
+}
+
+/** Body of PUT /workouts/sessions/:id/exercises/:routineExerciseId/substitution. */
+export interface SubstituteSessionExerciseRequest {
+  exerciseId: string;
+  /** Also use this exercise in the routine from the next session on. */
+  applyToRoutine?: boolean;
+}
+
+/**
+ * Stable successful response of the substitution PUT and DELETE. A swap is
+ * refused once the slot has a completed set; incomplete drafts for the slot
+ * are cleared because their values belonged to the other exercise.
+ */
+export interface SubstituteSessionExerciseResponse {
+  session: WorkoutSession;
+  /** True only when `applyToRoutine` was asked for and the routine still has the slot. */
+  routineUpdated: boolean;
 }
 
 export type PersonalRecordKind =
