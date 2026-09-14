@@ -82,3 +82,25 @@ export interface Exercise {
   createdAt: IsoDateString;
   updatedAt: IsoDateString;
 }
+
+// Starred exercises (EXER-07) ---------------------------------------------
+
+/**
+ * The most catalog exercises one account can star. Starring is a private
+ * working preference that orders pickers; it is separate from the public
+ * favorite exercises on the training identity.
+ */
+export const STARRED_EXERCISES_MAX = 100;
+
+export interface StarredExercise {
+  exerciseId: string;
+  starredAt: IsoDateString;
+}
+
+/**
+ * Response of GET /exercises/starred and of PUT/DELETE
+ * /exercises/:id/star. Newest first.
+ */
+export interface StarredExercisesResponse {
+  items: StarredExercise[];
+}
