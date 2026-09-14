@@ -3,6 +3,7 @@ export * from "./user";
 export * from "./auth";
 export * from "./exercise";
 export * from "./goals";
+export * from './achievements';
 export * from "./routine";
 export * from "./workout";
 export * from "./analytics";

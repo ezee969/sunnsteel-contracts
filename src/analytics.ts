@@ -11,6 +11,8 @@ export const TRAINING_EVENT_TYPES = [
   'SESSION_COMPLETED',
   'PERSONAL_RECORD',
   'PROGRESSION_CHANGED',
+  'STREAK_MILESTONE',
+  'ACHIEVEMENT_UNLOCKED',
 ] as const;
 export type TrainingEventType = (typeof TRAINING_EVENT_TYPES)[number];
 
