@@ -351,9 +351,10 @@ export interface WorkoutAnalyticsStatus {
 
 /**
  * Thresholds behind every plateau. A lift is flagged only when all hold: at
- * least `PLATEAU_MIN_SESSIONS` terminal sessions with completed loaded sets
- * of it since its current best (the session that set the best excluded, and
- * counting only inside the look-back window), the best is at least
+ * least the account's minimum sessions (`PLATEAU_MIN_SESSIONS` by default)
+ * of terminal sessions with completed loaded sets of it since its current
+ * best (the session that set the best excluded, and counting only inside the
+ * look-back window), the best is at least
  * `PLATEAU_MIN_DAYS_SINCE_BEST` days old, and the lift was trained within the
  * last `PLATEAU_RECENT_DAYS` days. They describe numbers, never a cause.
  */
@@ -361,6 +362,18 @@ export const PLATEAU_WINDOW_DAYS = 56;
 export const PLATEAU_MIN_SESSIONS = 4;
 export const PLATEAU_MIN_DAYS_SINCE_BEST = 21;
 export const PLATEAU_RECENT_DAYS = 21;
+
+/**
+ * PREF-05: each account chooses its minimum sessions within these bounds;
+ * `PLATEAU_MIN_SESSIONS` is the default. The other thresholds stay fixed.
+ */
+export const PLATEAU_MIN_SESSIONS_MIN = 3;
+export const PLATEAU_MIN_SESSIONS_MAX = 8;
+
+/** Body and response of PUT /users/preferences/plateaus. */
+export interface PlateauPreferences {
+  minSessions: number;
+}
 
 export interface PlateauSet {
   weightKg: number;
@@ -388,6 +401,7 @@ export interface PlateausResponse {
   asOf: IsoDateString;
   thresholds: {
     windowDays: number;
+    /** The account's PREF-05 choice, within the bounds above. */
     minSessions: number;
     minDaysSinceBest: number;
     recentDays: number;
