@@ -94,10 +94,84 @@ export interface EarnedAchievement extends AchievementDefinition {
   backfilled: boolean;
 }
 
+export interface RenaissanceRankDefinition {
+  id:
+    | 'INITIATE'
+    | 'APPRENTICE'
+    | 'ARTISAN'
+    | 'MAESTRO'
+    | 'VIRTUOSO'
+    | 'LAUREATE';
+  title: string;
+  description: string;
+  minimumSessions: number;
+  minimumActiveWeeks: number;
+}
+
+/**
+ * Stable rank ladder. Both requirements are intentionally based on attendance:
+ * completed sessions reward participation, while distinct active weeks reward
+ * consistency without encouraging consecutive-day training.
+ */
+export const RENAISSANCE_RANK_DEFINITIONS = [
+  {
+    id: 'INITIATE',
+    title: 'Initiate',
+    description: 'Your place in the training ledger begins here.',
+    minimumSessions: 0,
+    minimumActiveWeeks: 0,
+  },
+  {
+    id: 'APPRENTICE',
+    title: 'Apprentice',
+    description: 'Learning the craft through regular practice.',
+    minimumSessions: 5,
+    minimumActiveWeeks: 3,
+  },
+  {
+    id: 'ARTISAN',
+    title: 'Artisan',
+    description: 'Building a dependable training practice.',
+    minimumSessions: 15,
+    minimumActiveWeeks: 8,
+  },
+  {
+    id: 'MAESTRO',
+    title: 'Maestro',
+    description: 'Sustaining purposeful work across many weeks.',
+    minimumSessions: 30,
+    minimumActiveWeeks: 16,
+  },
+  {
+    id: 'VIRTUOSO',
+    title: 'Virtuoso',
+    description: 'Showing enduring discipline through repeated seasons.',
+    minimumSessions: 60,
+    minimumActiveWeeks: 32,
+  },
+  {
+    id: 'LAUREATE',
+    title: 'Laureate',
+    description: 'A lasting training practice recorded in the ledger.',
+    minimumSessions: 100,
+    minimumActiveWeeks: 52,
+  },
+] as const satisfies readonly RenaissanceRankDefinition[];
+
+export interface RenaissanceRankProgress {
+  currentRank: RenaissanceRankDefinition;
+  nextRank: RenaissanceRankDefinition | null;
+  completedSessions: number;
+  activeWeeks: number;
+  sessionsRemaining: number;
+  activeWeeksRemaining: number;
+}
+
 /** Stable successful response of GET /achievements. */
 export interface AchievementsResponse {
   analyticsReady: boolean;
   earnedCount: number;
   availableCount: number;
   achievements: EarnedAchievement[];
+  rank: RenaissanceRankProgress | null;
 }
