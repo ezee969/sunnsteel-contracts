@@ -346,3 +346,54 @@ export interface WorkoutAnalyticsStatus {
   state: 'UNINITIALIZED' | 'BUILDING' | 'READY' | 'FAILED';
   generationId: string | null;
 }
+
+// Plateau watch (PROG-09) ------------------------------------------------
+
+/**
+ * Thresholds behind every plateau. A lift is flagged only when all hold: at
+ * least `PLATEAU_MIN_SESSIONS` terminal sessions with completed loaded sets
+ * of it since its current best (the session that set the best excluded, and
+ * counting only inside the look-back window), the best is at least
+ * `PLATEAU_MIN_DAYS_SINCE_BEST` days old, and the lift was trained within the
+ * last `PLATEAU_RECENT_DAYS` days. They describe numbers, never a cause.
+ */
+export const PLATEAU_WINDOW_DAYS = 56;
+export const PLATEAU_MIN_SESSIONS = 4;
+export const PLATEAU_MIN_DAYS_SINCE_BEST = 21;
+export const PLATEAU_RECENT_DAYS = 21;
+
+export interface PlateauSet {
+  weightKg: number;
+  reps: number;
+  estimated1rmKg: number;
+}
+
+export interface ExercisePlateau {
+  exerciseId: string;
+  exerciseName: string;
+  /** The persisted best-set frontier. */
+  best: PlateauSet & { achievedAt: IsoDateString };
+  /** Sessions were counted from the later of the best and the window start. */
+  countedSince: IsoDateString;
+  sessionsWithoutNewBest: number;
+  /** The set since then with the highest estimated 1RM (latest on ties). */
+  closest: PlateauSet & { performedAt: IsoDateString };
+  /** closest.estimated1rmKg / best.estimated1rmKg. */
+  closestRatio: number;
+  lastPerformedAt: IsoDateString;
+}
+
+/** Stable successful response of GET /workouts/progress/plateaus. */
+export interface PlateausResponse {
+  asOf: IsoDateString;
+  thresholds: {
+    windowDays: number;
+    minSessions: number;
+    minDaysSinceBest: number;
+    recentDays: number;
+  };
+  /** Lifts with a best set that were trained within the recent days. */
+  checkedExercises: number;
+  /** Longest-running first: most sessions without a new best. */
+  plateaus: ExercisePlateau[];
+}
