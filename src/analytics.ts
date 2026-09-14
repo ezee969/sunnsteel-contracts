@@ -267,6 +267,8 @@ export type ProgressTimelineEventType =
 
 export interface ProgressTimelineQuery {
   type?: ProgressTimelineEventType;
+  /** Only events for one catalog exercise (EXER-01). */
+  exerciseId?: string;
   cursor?: string;
   limit?: number;
 }
