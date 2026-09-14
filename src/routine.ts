@@ -119,6 +119,11 @@ export interface Routine {
    * aborted session does not advance it), or the first day before any.
    */
   nextRotationDayId: string | null;
+  /**
+   * SCHED-07: weekdays (0=Sun..6=Sat) this weekly routine rests on by plan,
+   * never one of its training weekdays; always empty on a ROTATION routine.
+   */
+  restDays: number[];
   days: RoutineDay[];
   createdAt: IsoDateString;
   updatedAt: IsoDateString;
@@ -130,6 +135,11 @@ export interface CreateRoutineRequest {
   isPeriodized: boolean;
   /** Defaults to WEEKLY. Changing it on update requires `days`. */
   scheduleMode?: RoutineScheduleMode;
+  /**
+   * Weekly routines only. Omitted on update keeps the stored rest days, minus
+   * any that became training weekdays.
+   */
+  restDays?: number[];
   days: CreateRoutineDayInput[];
 }
 
