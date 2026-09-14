@@ -53,7 +53,8 @@ export interface WorkoutSession {
     id: string;
     name?: string | null;
     order?: number;
-    dayOfWeek?: number;
+    /** Null on a ROTATION routine day (ROUT-11). */
+    dayOfWeek?: number | null;
     exercises: Array<{
       id: string;
       order: number;
