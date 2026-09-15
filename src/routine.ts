@@ -124,6 +124,12 @@ export interface Routine {
    * never one of its training weekdays; always empty on a ROTATION routine.
    */
   restDays: number[];
+  /**
+   * SCHED-06: weekdays (0=Sun..6=Sat) a ROTATION routine trains on, sorted; the
+   * schedule places its days on them in order. Empty means any day, without
+   * dates; always empty on a WEEKLY routine.
+   */
+  rotationWeekdays: number[];
   days: RoutineDay[];
   createdAt: IsoDateString;
   updatedAt: IsoDateString;
@@ -140,6 +146,11 @@ export interface CreateRoutineRequest {
    * any that became training weekdays.
    */
   restDays?: number[];
+  /**
+   * Rotation routines only. Omitted on update keeps the stored weekdays;
+   * switching to WEEKLY clears them.
+   */
+  rotationWeekdays?: number[];
   days: CreateRoutineDayInput[];
 }
 
@@ -182,6 +193,8 @@ export interface RoutineVersionSetup {
   description: string | null;
   scheduleMode: RoutineScheduleMode;
   restDays: number[];
+  /** SCHED-06; absent in versions saved before it, which means none. */
+  rotationWeekdays?: number[];
   days: RoutineVersionDay[];
 }
 
