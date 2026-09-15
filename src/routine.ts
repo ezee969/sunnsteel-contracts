@@ -144,3 +144,74 @@ export interface CreateRoutineRequest {
 }
 
 export type UpdateRoutineRequest = Partial<CreateRoutineRequest>;
+
+// Routine versions (ROUT-08) ----------------------------------------------
+
+/** A routine keeps at most this many versions; saving past it is refused. */
+export const ROUTINE_VERSIONS_MAX = 20;
+export const ROUTINE_VERSION_NAME_MAX = 60;
+
+/**
+ * SAVED is an intentional save; BEFORE_RESTORE is the setup a restore
+ * replaced, saved automatically so the restore can be undone.
+ */
+export const ROUTINE_VERSION_KINDS = ['SAVED', 'BEFORE_RESTORE'] as const;
+export type RoutineVersionKind = (typeof ROUTINE_VERSION_KINDS)[number];
+
+export interface RoutineVersionExercise {
+  /** The catalog exercise and its name when the version was saved. */
+  exercise: { id: string; name: string };
+  order: number;
+  restSeconds: number;
+  note: string | null;
+  progressionScheme: ProgressionScheme;
+  minWeightIncrement: number;
+  sets: RoutineSet[];
+}
+
+export interface RoutineVersionDay {
+  dayOfWeek: number | null;
+  name: string | null;
+  order: number;
+  exercises: RoutineVersionExercise[];
+}
+
+/** Everything a routine edit can change, as it was when the version was saved. */
+export interface RoutineVersionSetup {
+  name: string;
+  description: string | null;
+  scheduleMode: RoutineScheduleMode;
+  restDays: number[];
+  days: RoutineVersionDay[];
+}
+
+export interface RoutineVersion {
+  id: string;
+  routineId: string;
+  /** 1, 2, 3… per routine, never reused after a deletion. */
+  number: number;
+  name: string | null;
+  kind: RoutineVersionKind;
+  /** BEFORE_RESTORE only: the number of the version that was restored. */
+  restoredVersionNumber: number | null;
+  createdAt: IsoDateString;
+  setup: RoutineVersionSetup;
+}
+
+/** `GET /routines/:id/versions`, newest first. */
+export interface RoutineVersionsResponse {
+  versions: RoutineVersion[];
+  max: number;
+}
+
+/** `POST /routines/:id/versions` */
+export interface CreateRoutineVersionRequest {
+  name?: string | null;
+}
+
+/** `POST /routines/:id/versions/:versionId/restore` */
+export interface RestoreRoutineVersionResponse {
+  routine: Routine;
+  /** The replaced setup, saved as a BEFORE_RESTORE version. */
+  savedVersion: RoutineVersion;
+}
