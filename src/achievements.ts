@@ -178,6 +178,38 @@ export interface AchievementCategoryProgress {
   remaining: number;
 }
 
+/**
+ * ACH-05 recognises a return only after the athlete has rebuilt a small,
+ * recovery-compatible pattern. The break is counted as full local calendar
+ * days without a completed session; repeated sessions on one date count once.
+ */
+export const COMEBACK_MIN_INACTIVE_DAYS = 14;
+export const COMEBACK_REQUIRED_ACTIVE_DAYS = 3;
+export const COMEBACK_WINDOW_DAYS = 14;
+export const COMEBACK_SESSION_LOOKBACK = 500;
+export const COMEBACK_RECOGNITION_LIMIT = 20;
+
+export interface ComebackRecognition {
+  id: string;
+  inactiveDays: number;
+  returnedAt: IsoDateString;
+  recognizedAt: IsoDateString;
+  sourceSessionId: string;
+  activeDays: number;
+  /** Inclusive local-calendar span from the return through recognition. */
+  windowDays: number;
+}
+
+export interface ComebackRecognitionSummary {
+  minimumInactiveDays: number;
+  requiredActiveDays: number;
+  windowDays: number;
+  /** Most recent first, capped by COMEBACK_RECOGNITION_LIMIT. */
+  recognitions: ComebackRecognition[];
+  /** True when older completed-session events fell outside the bounded scan. */
+  historyTruncated: boolean;
+}
+
 /** Stable successful response of GET /achievements. */
 export interface AchievementsResponse {
   analyticsReady: boolean;
@@ -186,4 +218,5 @@ export interface AchievementsResponse {
   achievements: EarnedAchievement[];
   rank: RenaissanceRankProgress | null;
   milestoneProgress: AchievementCategoryProgress[];
+  comeback: ComebackRecognitionSummary | null;
 }
