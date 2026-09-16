@@ -4,6 +4,10 @@ import type {
   WeightUnit,
 } from './shared';
 import type { PersonalRecordEntry } from './analytics';
+import type {
+  EarnedAchievement,
+  RenaissanceRankDefinition,
+} from './achievements';
 
 // User contracts ----------------------------------------------------------
 
@@ -151,6 +155,60 @@ export interface PublicBodyMetrics {
   heightCm?: number | null;
 }
 
+export const FEATURED_PROFILE_ITEM_KINDS = [
+  'RECORD',
+  'ACHIEVEMENT',
+  'RANK',
+] as const;
+export type FeaturedProfileItemKind =
+  (typeof FEATURED_PROFILE_ITEM_KINDS)[number];
+
+export const FEATURED_PROFILE_ITEMS_MAX = 6;
+export const FEATURED_PROFILE_REFERENCE_MAX_LENGTH = 100;
+
+/** Owner-supplied selection. Array order becomes the public display order. */
+export interface FeaturedProfileSelectionInput {
+  kind: FeaturedProfileItemKind;
+  referenceId: string;
+}
+
+/** Stored selection returned to its owner, ordered by `position`. */
+export interface FeaturedProfileSelection
+  extends FeaturedProfileSelectionInput {
+  position: number;
+}
+
+export interface FeaturedProfileSelectionsResponse {
+  items: FeaturedProfileSelection[];
+}
+
+export interface ReplaceFeaturedProfileItemsRequest {
+  items: FeaturedProfileSelectionInput[];
+}
+
+type FeaturedProfileItemBase = FeaturedProfileSelection;
+
+export interface FeaturedProfileRecordItem extends FeaturedProfileItemBase {
+  kind: 'RECORD';
+  record: PersonalRecordEntry;
+}
+
+export interface FeaturedProfileAchievementItem extends FeaturedProfileItemBase {
+  kind: 'ACHIEVEMENT';
+  achievement: EarnedAchievement;
+}
+
+export interface FeaturedProfileRankItem extends FeaturedProfileItemBase {
+  kind: 'RANK';
+  rank: RenaissanceRankDefinition;
+}
+
+/** Privacy-filtered, currently valid selections in owner-defined order. */
+export type FeaturedProfileItem =
+  | FeaturedProfileRecordItem
+  | FeaturedProfileAchievementItem
+  | FeaturedProfileRankItem;
+
 export interface UserProfile {
   timeZone?: string | null;
   id: string;
@@ -192,6 +250,7 @@ export interface PublicUserProfile {
   viewerAccess: ProfileViewerAccess;
   trainingSummary?: PublicTrainingSummary;
   personalRecords?: PersonalRecordEntry[];
+  featuredItems: FeaturedProfileItem[];
   bodyMetrics?: PublicBodyMetrics;
 }
 
