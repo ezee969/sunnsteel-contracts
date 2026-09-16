@@ -5,6 +5,7 @@ import type {
 } from './shared';
 import type { PersonalRecordEntry } from './analytics';
 import type {
+  ComebackRecognitionSummary,
   EarnedAchievement,
   RenaissanceRankDefinition,
 } from './achievements';
@@ -209,6 +210,13 @@ export type FeaturedProfileItem =
   | FeaturedProfileAchievementItem
   | FeaturedProfileRankItem;
 
+/** Complete earned ledger allowed by the profile achievements privacy rule. */
+export interface PublicProfileAchievements {
+  rank: RenaissanceRankDefinition | null;
+  achievements: EarnedAchievement[];
+  comeback: ComebackRecognitionSummary | null;
+}
+
 export interface UserProfile {
   timeZone?: string | null;
   id: string;
@@ -251,6 +259,7 @@ export interface PublicUserProfile {
   trainingSummary?: PublicTrainingSummary;
   personalRecords?: PersonalRecordEntry[];
   featuredItems: FeaturedProfileItem[];
+  achievements?: PublicProfileAchievements;
   bodyMetrics?: PublicBodyMetrics;
 }
 
