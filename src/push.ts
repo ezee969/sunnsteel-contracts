@@ -68,7 +68,7 @@ export interface DeletePushSubscriptionRequest {
  * What a delivered push asks the service worker to show. `kind` exists so the
  * worker can branch without guessing from the copy.
  */
-export const PUSH_PAYLOAD_KINDS = ['REST_ALERT'] as const;
+export const PUSH_PAYLOAD_KINDS = ['REST_ALERT', 'TRAINING_REMINDER'] as const;
 export type PushPayloadKind = (typeof PUSH_PAYLOAD_KINDS)[number];
 
 export interface RestAlertPushPayload {
@@ -86,7 +86,16 @@ export interface RestAlertPushPayload {
   tag: string;
 }
 
-export type PushPayload = RestAlertPushPayload;
+/** NOTIF-04. Planned for a local date, so it names days, never an hour. */
+export interface TrainingReminderPushPayload {
+  kind: 'TRAINING_REMINDER';
+  title: string;
+  body: string;
+  url: string;
+  tag: string;
+}
+
+export type PushPayload = RestAlertPushPayload | TrainingReminderPushPayload;
 
 /** A rest alert is refused beyond this far ahead. */
 export const REST_ALERT_MAX_LEAD_SECONDS = 3600;
@@ -122,5 +131,9 @@ export const REST_ALERT_REFUSALS = [
   'PUSH_UNAVAILABLE',
   /** Rest ends too soon for a push to beat it. */
   'TOO_SOON',
+  /** NOTIF-05: the owner switched rest alerts off. */
+  'CATEGORY_OFF',
+  /** NOTIF-05: rest would end inside the owner's quiet hours. */
+  'QUIET_HOURS',
 ] as const;
 export type RestAlertRefusal = (typeof REST_ALERT_REFUSALS)[number];

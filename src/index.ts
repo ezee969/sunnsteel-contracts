@@ -10,3 +10,4 @@ export * from "./workout";
 export * from "./analytics";
 export * from "./notifications";
 export * from "./push";
+export * from "./notification-preferences";
