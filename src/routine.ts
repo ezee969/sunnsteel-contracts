@@ -1,3 +1,4 @@
+import type { RoutineVisibility } from './routine-sharing';
 import type {
   IsoDateString,
   MuscleGroup,
@@ -130,6 +131,12 @@ export interface Routine {
    * dates; always empty on a WEEKLY routine.
    */
   rotationWeekdays: number[];
+  /**
+   * ROUT-04: who may read this routine, bounded by the account-level
+   * `PROF-06` routines rule. Owner-only field; it never appears in a shared
+   * read, where visibility is the reason the reader is there.
+   */
+  visibility: RoutineVisibility;
   days: RoutineDay[];
   createdAt: IsoDateString;
   updatedAt: IsoDateString;

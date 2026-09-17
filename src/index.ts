@@ -5,6 +5,7 @@ export * from "./exercise";
 export * from "./goals";
 export * from './achievements';
 export * from "./routine";
+export * from "./routine-sharing";
 export * from "./schedule";
 export * from "./workout";
 export * from "./analytics";
