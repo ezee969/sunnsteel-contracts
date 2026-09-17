@@ -14,6 +14,7 @@ import type { CalendarDate } from './schedule';
 export const NOTIFICATION_CATEGORIES = [
   'REST_ALERT',
   'TRAINING_REMINDER',
+  'STREAK_AT_RISK',
 ] as const;
 export type NotificationCategory = (typeof NOTIFICATION_CATEGORIES)[number];
 
@@ -55,6 +56,14 @@ export interface TrainingReminderPreference {
   /** Null switches reminders off without discarding the chosen time. */
   minuteOfDay: number | null;
 }
+
+/**
+ * NOTIF-06. A streak survives a gap of `STREAK_MAX_GAP_DAYS` and dies on the
+ * next day, so "at risk" is not a judgement: it is the last local date that
+ * can still save the run. The rule lives here because both halves of the
+ * product state it.
+ */
+export const STREAK_MAX_GAP_DAYS = 3;
 
 export interface NotificationPreferences {
   /** Every category, so a client never has to assume a default. */

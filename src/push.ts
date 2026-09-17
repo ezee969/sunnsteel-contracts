@@ -68,7 +68,11 @@ export interface DeletePushSubscriptionRequest {
  * What a delivered push asks the service worker to show. `kind` exists so the
  * worker can branch without guessing from the copy.
  */
-export const PUSH_PAYLOAD_KINDS = ['REST_ALERT', 'TRAINING_REMINDER'] as const;
+export const PUSH_PAYLOAD_KINDS = [
+  'REST_ALERT',
+  'TRAINING_REMINDER',
+  'STREAK_AT_RISK',
+] as const;
 export type PushPayloadKind = (typeof PUSH_PAYLOAD_KINDS)[number];
 
 export interface RestAlertPushPayload {
@@ -95,7 +99,23 @@ export interface TrainingReminderPushPayload {
   tag: string;
 }
 
-export type PushPayload = RestAlertPushPayload | TrainingReminderPushPayload;
+/**
+ * NOTIF-06. Sent on the last day a run can still be saved, in place of that
+ * day's reminder rather than beside it. It states the evidence and never
+ * instructs anyone to train: a rest day ending a streak is the plan working.
+ */
+export interface StreakAtRiskPushPayload {
+  kind: 'STREAK_AT_RISK';
+  title: string;
+  body: string;
+  url: string;
+  tag: string;
+}
+
+export type PushPayload =
+  | RestAlertPushPayload
+  | TrainingReminderPushPayload
+  | StreakAtRiskPushPayload;
 
 /** A rest alert is refused beyond this far ahead. */
 export const REST_ALERT_MAX_LEAD_SECONDS = 3600;
