@@ -74,6 +74,25 @@ export interface SharedRoutine {
   updatedAt: IsoDateString;
 }
 
+/**
+ * ROUT-06. Where a cloned routine came from. It is recorded on the clone and
+ * never on the source, so a routine cannot learn who copied it. It is served
+ * only to a viewer who could read the source anyway: lineage must not become
+ * a way to discover that a private routine exists.
+ */
+export interface RoutineLineage {
+  /** The routine this one was cloned from, when the viewer may read it. */
+  sourceRoutineId: string | null;
+  /** The original author's public identity, when they still have one. */
+  author: SharedRoutineOwner | null;
+  /**
+   * True when the source exists but this viewer may not read it, or its author
+   * is gone. The clone still says it was cloned; it just cannot say from what.
+   */
+  isSourceHidden: boolean;
+  clonedAt: IsoDateString;
+}
+
 /** A routine in a member's visible list, without loading its whole setup. */
 export interface SharedRoutineSummary {
   routineId: string;

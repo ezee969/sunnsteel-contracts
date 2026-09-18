@@ -1,4 +1,4 @@
-import type { RoutineVisibility } from './routine-sharing';
+import type { RoutineLineage, RoutineVisibility } from './routine-sharing';
 import type {
   IsoDateString,
   MuscleGroup,
@@ -137,6 +137,11 @@ export interface Routine {
    * read, where visibility is the reason the reader is there.
    */
   visibility: RoutineVisibility;
+  /**
+   * ROUT-06: present only on a routine that was cloned, and only with what
+   * this viewer is allowed to know about its source.
+   */
+  lineage?: RoutineLineage | null;
   days: RoutineDay[];
   createdAt: IsoDateString;
   updatedAt: IsoDateString;

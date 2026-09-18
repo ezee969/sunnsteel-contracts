@@ -9,6 +9,7 @@ import type {
   EarnedAchievement,
   RenaissanceRankDefinition,
 } from './achievements';
+import type { MemberModerationState } from './moderation';
 import type { SharedRoutineSummary } from './routine-sharing';
 
 // User contracts ----------------------------------------------------------
@@ -274,6 +275,12 @@ export interface PublicUserProfile {
   followerCount: number;
   followingCount: number;
   isFollowedByMe: boolean;
+  /**
+   * PROF-10: only on the authenticated read, and only about the viewer's own
+   * action. A profile never says it has blocked the viewer — a blocked viewer
+   * gets a 404, as a denied routine does.
+   */
+  moderation?: MemberModerationState;
   viewerAccess: ProfileViewerAccess;
   trainingSummary?: PublicTrainingSummary;
   personalRecords?: PersonalRecordEntry[];

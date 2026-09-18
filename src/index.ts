@@ -1,5 +1,6 @@
 export * from "./shared";
 export * from "./user";
+export * from "./moderation";
 export * from "./auth";
 export * from "./exercise";
 export * from "./goals";
