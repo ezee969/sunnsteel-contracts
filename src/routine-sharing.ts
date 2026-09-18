@@ -89,3 +89,35 @@ export interface SharedRoutineSummary {
 export interface MemberRoutinesResponse {
   routines: SharedRoutineSummary[];
 }
+
+// Routine cloning (ROUT-05) ---------------------------------------------------
+//
+// A clone is a new routine of the viewer's own, built from the prescription
+// they were allowed to read. It reuses `SharedRoutine.setup` — the same
+// `RoutineVersionSetup` a `ROUT-08` version stores — so what is copied is
+// exactly what was shared: the programme, never the original owner's training.
+// The clone is independent from the moment it exists; changing either routine
+// afterwards does nothing to the other. Recording where it came from is
+// `ROUT-06`, deliberately not this.
+
+/**
+ * POST /routines/clones. Exactly one source, matching the two ways a routine
+ * can be read: `token` for a private link, `routineId` for one the viewer may
+ * already see. Sending both, or neither, is refused.
+ */
+export interface CloneRoutineRequest {
+  /** The `/shared/routines/:token` link the reader followed. */
+  token?: string;
+  /** A routine the viewer may read under `ROUT-04` visibility. */
+  routineId?: string;
+}
+
+/** The refusals a clone states by name rather than as a bare 4xx. */
+export const CLONE_ROUTINE_REFUSALS = {
+  /** Neither `token` nor `routineId`, or both at once. */
+  SOURCE_REQUIRED: 'SOURCE_REQUIRED',
+  /** An exercise the routine programs is no longer in the catalog. */
+  UNKNOWN_EXERCISE: 'UNKNOWN_EXERCISE',
+} as const;
+export type CloneRoutineRefusal =
+  (typeof CLONE_ROUTINE_REFUSALS)[keyof typeof CLONE_ROUTINE_REFUSALS];

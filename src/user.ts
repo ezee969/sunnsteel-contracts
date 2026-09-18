@@ -9,6 +9,7 @@ import type {
   EarnedAchievement,
   RenaissanceRankDefinition,
 } from './achievements';
+import type { SharedRoutineSummary } from './routine-sharing';
 
 // User contracts ----------------------------------------------------------
 
@@ -156,10 +157,16 @@ export interface PublicBodyMetrics {
   heightCm?: number | null;
 }
 
+/**
+ * `ROUTINE` is `PROF-08`: a shared routine is a fourth kind of featured item,
+ * not a second showcase. It carries a `SharedRoutineSummary`, so a slot on a
+ * profile still cannot express the owner's training.
+ */
 export const FEATURED_PROFILE_ITEM_KINDS = [
   'RECORD',
   'ACHIEVEMENT',
   'RANK',
+  'ROUTINE',
 ] as const;
 export type FeaturedProfileItemKind =
   (typeof FEATURED_PROFILE_ITEM_KINDS)[number];
@@ -204,11 +211,23 @@ export interface FeaturedProfileRankItem extends FeaturedProfileItemBase {
   rank: RenaissanceRankDefinition;
 }
 
+/**
+ * PROF-08. `referenceId` is the routine's id. It is resolved through the same
+ * `ROUT-04` rule as every other read of somebody else's routine, so the
+ * account-level `PROF-06` routines rule caps the routine's own visibility and
+ * a slot the viewer may not see is omitted rather than emptied.
+ */
+export interface FeaturedProfileRoutineItem extends FeaturedProfileItemBase {
+  kind: 'ROUTINE';
+  routine: SharedRoutineSummary;
+}
+
 /** Privacy-filtered, currently valid selections in owner-defined order. */
 export type FeaturedProfileItem =
   | FeaturedProfileRecordItem
   | FeaturedProfileAchievementItem
-  | FeaturedProfileRankItem;
+  | FeaturedProfileRankItem
+  | FeaturedProfileRoutineItem;
 
 /** Complete earned ledger allowed by the profile achievements privacy rule. */
 export interface PublicProfileAchievements {
