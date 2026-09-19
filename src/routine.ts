@@ -1,4 +1,5 @@
 import type { RoutineLineage, RoutineVisibility } from './routine-sharing';
+import type { TrainingExperienceLevel, TrainingGoal } from './user';
 import type {
   IsoDateString,
   MuscleGroup,
@@ -142,6 +143,13 @@ export interface Routine {
    * this viewer is allowed to know about its source.
    */
   lineage?: RoutineLineage | null;
+  /**
+   * ROUT-07: owner-declared, both optional. They are claims about the
+   * programme that only its author can make, which is why they are stored
+   * here rather than derived from the author's `PROF-05` training identity.
+   */
+  goal?: TrainingGoal | null;
+  experienceLevel?: TrainingExperienceLevel | null;
   days: RoutineDay[];
   createdAt: IsoDateString;
   updatedAt: IsoDateString;
@@ -150,6 +158,9 @@ export interface Routine {
 export interface CreateRoutineRequest {
   name: string;
   description?: string;
+  /** ROUT-07; omitted means undeclared, which is not the same as a default. */
+  goal?: TrainingGoal | null;
+  experienceLevel?: TrainingExperienceLevel | null;
   isPeriodized: boolean;
   /** Defaults to WEEKLY. Changing it on update requires `days`. */
   scheduleMode?: RoutineScheduleMode;
