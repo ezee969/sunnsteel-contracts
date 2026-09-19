@@ -8,6 +8,7 @@ export * from './achievements';
 export * from "./routine";
 export * from "./routine-sharing";
 export * from "./routine-discovery";
+export * from "./activity";
 export * from "./schedule";
 export * from "./workout";
 export * from "./analytics";
