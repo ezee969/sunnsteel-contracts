@@ -255,6 +255,12 @@ export interface UserProfile {
   weightUnit: WeightUnit;
   privacySettings: ProfilePrivacySettings;
   discoverySettings: ProfileDiscoverySettings;
+  /**
+   * TRUST-04: whether this account may open the moderation queue. It is on
+   * the owner's own profile only and never on `PublicUserProfile` — who
+   * moderates is not a fact other members are owed.
+   */
+  isModerator: boolean;
   followerCount: number;
   followingCount: number;
   createdAt: IsoDateString;

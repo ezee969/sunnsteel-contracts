@@ -150,6 +150,13 @@ export interface Routine {
    */
   goal?: TrainingGoal | null;
   experienceLevel?: TrainingExperienceLevel | null;
+  /**
+   * TRUST-04: a moderator has hidden this routine from everyone but its
+   * owner. Owner-only field, and true on the owner's own read alone: a
+   * routine nobody else can open while its own visibility still reads
+   * "Public" would be a control with nothing behind it.
+   */
+  isHiddenByModeration?: boolean;
   days: RoutineDay[];
   createdAt: IsoDateString;
   updatedAt: IsoDateString;

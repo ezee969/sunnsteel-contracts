@@ -292,6 +292,13 @@ export interface SessionShare {
   token: string;
   fields: SessionShareField[];
   createdAt: IsoDateString;
+  /**
+   * TRUST-04: a moderator has hidden the shared workout, so the link stops
+   * resolving for everyone but its owner. The link is not revoked and the
+   * session is untouched; the owner is told because a live-looking link that
+   * opens for nobody is worse than one that says why.
+   */
+  isHiddenByModeration?: boolean;
 }
 
 /** Stable successful response of GET /workouts/sessions/:id/shares. */
