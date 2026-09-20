@@ -58,6 +58,51 @@ export type ActivityAudience = ProfileVisibility;
 /** Every type starts here until its owner chooses otherwise. */
 export const ACTIVITY_DEFAULT_AUDIENCE: ActivityAudience = 'PRIVATE';
 
+// Themed reactions (SOC-05) ------------------------------------------------
+//
+// An acknowledgement of one activity entry, never a score. The catalog is
+// deliberately four: they say "this was work", and nothing in the product
+// counts, ranks or orders by them. Blocking and the entry's own visibility
+// are settled before one is shown or accepted, by the activity read itself.
+
+export const ACTIVITY_REACTIONS = [
+  'STRENGTH',
+  'DISCIPLINE',
+  'RESPECT',
+  'INSPIRING',
+] as const;
+export type ActivityReaction = (typeof ACTIVITY_REACTIONS)[number];
+
+/**
+ * What a viewer may see of an entry's reactions: how many of each, and their
+ * own, so the control can show what they chose. **Deliberately no list of who
+ * reacted** -- that is an identity surface with its own privacy question, and
+ * a name beside an entry would say more about the reactor than the work.
+ * Members either side of a block are absent from the counts, so a number
+ * cannot reveal one of them.
+ */
+export interface ActivityReactionSummary {
+  counts: Record<ActivityReaction, number>;
+  /** The viewer's own reaction, or null; always null on the viewer's own entry. */
+  viewerReaction: ActivityReaction | null;
+}
+
+/**
+ * PUT /activity/entries/reaction. `null` removes the viewer's reaction, and
+ * choosing the one already chosen removes it too, so there is one per member
+ * per entry and nothing to accumulate. Reacting to your own entry is refused.
+ */
+export interface SetActivityReactionRequest {
+  entryId: string;
+  reaction: ActivityReaction | null;
+}
+
+/** Stable successful response of PUT /activity/entries/reaction. */
+export interface SetActivityReactionResponse {
+  entryId: string;
+  reactions: ActivityReactionSummary;
+}
+
 /**
  * Where the viewer may open the record an entry came from. The server decides
  * it, so the client never judges what a viewer may read; an entry whose
@@ -87,6 +132,12 @@ interface ActivityEntryBase {
    * can be shown together; null for a fact that belongs to no workout.
    */
   groupKey: string | null;
+  /**
+   * `SOC-05`. Travels inside the entry on purpose: a reaction can then never
+   * be shown on an entry this viewer was not allowed to see, because the same
+   * read decides both.
+   */
+  reactions: ActivityReactionSummary;
 }
 
 export interface SessionCompletedActivity extends ActivityEntryBase {
