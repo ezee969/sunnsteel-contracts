@@ -40,7 +40,16 @@ export interface MemberModerationState {
   isBlocked: boolean;
 }
 
-export const REPORT_SUBJECT_KINDS = ['MEMBER', 'ROUTINE', 'SESSION'] as const;
+export const REPORT_SUBJECT_KINDS = [
+  'MEMBER',
+  'ROUTINE',
+  'SESSION',
+  // SOC-06. The first reportable thing a member wrote rather than did, and the
+  // first one the TRUST-04 queue is likely to see in volume: everything above
+  // is content its owner created for themselves and shared, where a comment is
+  // aimed at somebody else.
+  'COMMENT',
+] as const;
 export type ReportSubjectKind = (typeof REPORT_SUBJECT_KINDS)[number];
 
 /**

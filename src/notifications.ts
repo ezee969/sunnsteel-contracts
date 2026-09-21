@@ -12,6 +12,10 @@ export const NOTIFICATION_KINDS = [
   'ACHIEVEMENT',
   'SESSION_PROGRESS',
   'NEW_FOLLOWER',
+  // SOC-06. The first kind another member causes on purpose. The three above
+  // are the account's own training, or a follow; a comment is somebody
+  // addressing you, which is why it is worth a notification at all.
+  'ACTIVITY_COMMENT',
 ] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 
@@ -60,11 +64,34 @@ export interface NewFollowerNotification extends NotificationBase {
   };
 }
 
+/**
+ * SOC-06: somebody commented on one of the recipient's activity entries.
+ *
+ * It carries no comment body. The notification centre is gathered on read and
+ * its rows outlive what they describe, so quoting text that can be deleted by
+ * its author, by the recipient, or by a moderator would leave a copy nobody
+ * can take back. The row names the commenter and the entry, and the comment
+ * itself is read where it lives.
+ */
+export interface ActivityCommentNotification extends NotificationBase {
+  kind: 'ACTIVITY_COMMENT';
+  actor: {
+    id: string;
+    username: string;
+    name: string;
+    lastName: string | null;
+    avatarUrl: string | null;
+  };
+  /** The activity entry commented on, for the link back to it. */
+  entryId: string;
+}
+
 /** Named to stay clear of the DOM's `Notification`. */
 export type AppNotification =
   | AchievementNotification
   | SessionProgressNotification
-  | NewFollowerNotification;
+  | NewFollowerNotification
+  | ActivityCommentNotification;
 
 /** GET /notifications */
 export interface NotificationsResponse {

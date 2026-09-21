@@ -1,7 +1,11 @@
 import type { AchievementCategory } from './achievements';
 import type { SharedRoutineOwner } from './routine-sharing';
 import type { IsoDateString } from './shared';
-import type { ProfilePrivacySettings, ProfileVisibility } from './user';
+import type {
+  ProfilePrivacySettings,
+  ProfileVisibility,
+  UserSearchResponse,
+} from './user';
 import type { ProgressionSetChange } from './workout';
 
 // Generated activity (SOC-03) and selective sharing (SOC-04) -----------------
@@ -138,6 +142,13 @@ interface ActivityEntryBase {
    * read decides both.
    */
   reactions: ActivityReactionSummary;
+  /**
+   * `SOC-06`. Travels inside the entry for the same reason reactions do. Only
+   * the count and what this viewer may do; the comments themselves are a
+   * separate read, because a feed page must not carry every comment on every
+   * entry.
+   */
+  comments: ActivityCommentSummary;
 }
 
 export interface SessionCompletedActivity extends ActivityEntryBase {
@@ -336,4 +347,96 @@ export interface SetActivityEntryAudienceRequest {
 export interface SetActivityEntryAudienceResponse {
   entryId: string;
   sharing: ActivityEntrySharing;
+}
+
+// Activity comments (SOC-06) --------------------------------------------------
+//
+// The first free text one member writes for another to read. Everything before
+// it is derived: an activity entry comes from verified training, a `SOC-05`
+// reaction is one of four fixed values, and a `PROF-10` report goes only to a
+// moderator. A comment is none of those, and the shape below is bounded
+// accordingly.
+//
+// It is **discussion attached to one verified thing**, not a posting surface.
+// There are no threads, no mentions, no editing, no reactions on comments, no
+// comment timeline and no per-member comment page; adding any of them is a new
+// decision rather than an extension of this one. Nothing else in the product
+// reads these rows -- no total, no rank, no ordering input -- the guard
+// `SOC-05` established so acknowledgement cannot become a score.
+
+/** One comment may be at most this long. Enforced by the server. */
+export const ACTIVITY_COMMENT_MAX_LENGTH = 500;
+
+/** One account writes at most this many comments a day, across all entries. */
+export const ACTIVITY_COMMENTS_PER_DAY_MAX = 100;
+
+/** One page of comments on one entry. */
+export const ACTIVITY_COMMENTS_PAGE_SIZE = 20;
+
+/**
+ * What a viewer may see of an entry's comments without reading them: how many,
+ * and whether they may add one. The count excludes members either side of a
+ * block and any comment a moderator has hidden, so it always matches what a
+ * read of the list would return for this viewer -- a count that disagreed
+ * would advertise a comment they cannot see.
+ */
+export interface ActivityCommentSummary {
+  count: number;
+  /**
+   * False on your own entry only because the server still accepts it -- an
+   * owner may reply on their own activity. It is false when the viewer has
+   * spent `ACTIVITY_COMMENTS_PER_DAY_MAX`.
+   */
+  canComment: boolean;
+}
+
+/**
+ * One comment as a viewer receives it. `canDelete` is resolved server-side and
+ * is true for two people: the comment's author, and the owner of the activity
+ * it hangs from -- it is their workout it is attached to.
+ */
+export interface ActivityComment {
+  id: string;
+  entryId: string;
+  author: UserSearchResponse;
+  body: string;
+  createdAt: IsoDateString;
+  canDelete: boolean;
+}
+
+export interface ActivityCommentsQuery {
+  entryId: string;
+  cursor?: string;
+  limit?: number;
+}
+
+/** Stable successful response of GET /activity/entries/comments. */
+export interface ActivityCommentsResponse {
+  entryId: string;
+  comments: ActivityComment[];
+  nextCursor: string | null;
+  /** Repeated here so a reader of the list needs no second request. */
+  summary: ActivityCommentSummary;
+}
+
+/**
+ * POST /activity/entries/comments. The entry is identified the way `SOC-05`
+ * identifies it, by the stable activity key, and the same read decides whether
+ * this viewer may comment at all: an entry they may not see answers **404**,
+ * never 403, which would confirm it exists.
+ */
+export interface CreateActivityCommentRequest {
+  entryId: string;
+  body: string;
+}
+
+export interface CreateActivityCommentResponse {
+  comment: ActivityComment;
+  summary: ActivityCommentSummary;
+}
+
+/** DELETE /activity/entries/comments/:id. A real delete, not a flag. */
+export interface DeleteActivityCommentResponse {
+  entryId: string;
+  summary: ActivityCommentSummary;
 }
