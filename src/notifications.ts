@@ -1,4 +1,5 @@
 import type { IsoDateString } from './shared';
+import type { TrainingPartnerEncouragementKind } from './training-partners';
 
 // In-app notification center (NOTIF-01) -------------------------------------
 
@@ -16,6 +17,8 @@ export const NOTIFICATION_KINDS = [
   // are the account's own training, or a follow; a comment is somebody
   // addressing you, which is why it is worth a notification at all.
   'ACTIVITY_COMMENT',
+  // SOC-09: one of four fixed, permissioned prompts from an active partner.
+  'TRAINING_PARTNER_ENCOURAGEMENT',
 ] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 
@@ -86,12 +89,26 @@ export interface ActivityCommentNotification extends NotificationBase {
   entryId: string;
 }
 
+export interface TrainingPartnerEncouragementNotification
+  extends NotificationBase {
+  kind: 'TRAINING_PARTNER_ENCOURAGEMENT';
+  actor: {
+    id: string;
+    username: string;
+    name: string;
+    lastName: string | null;
+    avatarUrl: string | null;
+  };
+  encouragement: { kind: TrainingPartnerEncouragementKind };
+}
+
 /** Named to stay clear of the DOM's `Notification`. */
 export type AppNotification =
   | AchievementNotification
   | SessionProgressNotification
   | NewFollowerNotification
-  | ActivityCommentNotification;
+  | ActivityCommentNotification
+  | TrainingPartnerEncouragementNotification;
 
 /** GET /notifications */
 export interface NotificationsResponse {

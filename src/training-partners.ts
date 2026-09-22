@@ -21,6 +21,19 @@ export const TRAINING_PARTNER_PERMISSION_KEYS = [
 export const TRAINING_PARTNERS_MAX = 20;
 export const TRAINING_PARTNER_REQUESTS_PER_DAY_MAX = 10;
 
+/** SOC-09: the complete, non-free-text encouragement vocabulary. */
+export const TRAINING_PARTNER_ENCOURAGEMENT_KINDS = [
+  'READY_TO_TRAIN',
+  'STRONG_SESSION',
+  'GOOD_WORK',
+  'KEEP_GOING',
+] as const;
+export type TrainingPartnerEncouragementKind =
+  (typeof TRAINING_PARTNER_ENCOURAGEMENT_KINDS)[number];
+
+/** Per sender/recipient pair over a rolling window, not a calendar boundary. */
+export const TRAINING_PARTNER_ENCOURAGEMENTS_PER_24_HOURS_MAX = 4;
+
 export const TRAINING_PARTNERSHIP_STATUSES = ['PENDING', 'ACTIVE'] as const;
 export type TrainingPartnershipStatus =
   (typeof TRAINING_PARTNERSHIP_STATUSES)[number];
@@ -57,4 +70,13 @@ export interface TrainingPartnerScheduleDay {
 export interface TrainingPartnerScheduleResponse {
   timeZone: string;
   days: TrainingPartnerScheduleDay[];
+}
+
+export interface SendTrainingPartnerEncouragementRequest {
+  kind: TrainingPartnerEncouragementKind;
+}
+
+export interface SendTrainingPartnerEncouragementResponse {
+  notificationId: string;
+  sentAt: IsoDateString;
 }
