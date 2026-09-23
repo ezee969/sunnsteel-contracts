@@ -333,6 +333,8 @@ export interface WorkoutSessionSnapshotV1 {
   notes: string | null;
   routine: NonNullable<WorkoutSession['routine']>;
   routineDay: NonNullable<WorkoutSession['routineDay']>;
+  /** ROUT-15; absent on snapshots captured before blocks executed. */
+  trainingBlock?: WorkoutSession['trainingBlock'];
 }
 
 export interface SetAccountTimeZoneRequest {

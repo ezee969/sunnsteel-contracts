@@ -1,3 +1,4 @@
+import type { SessionTrainingBlock } from './training-blocks';
 import type {
   IsoDateString,
   MuscleGroup,
@@ -50,6 +51,12 @@ export interface WorkoutSession {
    */
   exerciseNotes?: SessionExerciseNote[];
   reused?: boolean;
+  /**
+   * ROUT-15: the training block this session trained, or null when it
+   * trained the routine's baseline. Copied at start, so a later revision or
+   * the block's end never rewrites what the session was.
+   */
+  trainingBlock?: SessionTrainingBlock | null;
   routine?: {
     id: string;
     name: string;
@@ -391,6 +398,8 @@ export interface WorkoutSessionSummary {
     id: string;
     name: string;
     dayName?: string | null;
+    /** ROUT-15: the block trained, when it was one. */
+    trainingBlockName?: string | null;
   };
 }
 

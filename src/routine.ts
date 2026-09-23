@@ -1,3 +1,4 @@
+import type { RoutineTrainingBlockPlan } from './training-blocks';
 import type { RoutineLineage, RoutineVisibility } from './routine-sharing';
 import type { TrainingExperienceLevel, TrainingGoal } from './user';
 import type {
@@ -157,7 +158,15 @@ export interface Routine {
    * "Public" would be a control with nothing behind it.
    */
   isHiddenByModeration?: boolean;
+  /** The baseline days. A block's days are in `trainingBlocks`, never here. */
   days: RoutineDay[];
+  /**
+   * ROUT-15: every current block revision as a plan, past, active and future,
+   * ordered by start date. Owner-only; absent from any shared read. Resolve
+   * what a date trains with `resolveRoutinePlan`, never by reading this and
+   * `days` separately.
+   */
+  trainingBlocks?: RoutineTrainingBlockPlan[];
   createdAt: IsoDateString;
   updatedAt: IsoDateString;
 }
