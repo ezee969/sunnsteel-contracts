@@ -43,6 +43,12 @@ export interface WorkoutSession {
    * substituted slot carry the substitute's `exerciseId`.
    */
   exerciseSubstitutions?: SessionExerciseSubstitution[];
+  /**
+   * LIVE-16: what the owner noted about one exercise in this workout. The
+   * routine's own note (`routineDay.exercises[].note`) is the standing
+   * instruction and is never written from a session.
+   */
+  exerciseNotes?: SessionExerciseNote[];
   reused?: boolean;
   routine?: {
     id: string;
@@ -182,6 +188,33 @@ export interface SessionExerciseSubstitution {
   substitutedAt: IsoDateString;
 }
 
+// Session notes (LIVE-16) -------------------------------------------------
+
+export const SESSION_NOTE_MAX_LENGTH = 2000;
+export const SESSION_EXERCISE_NOTE_MAX_LENGTH = 500;
+
+/** One exercise's note for one workout, keyed by its routine slot. */
+export interface SessionExerciseNote {
+  /** The slot, as in `routineDay.exercises[].id`. */
+  routineExerciseId: string;
+  note: string;
+}
+
+/**
+ * Body of PUT /workouts/sessions/:id/notes. Partial: an omitted field keeps
+ * what is stored, `null` or an empty string clears it. Exercise notes merge
+ * by slot, so two notes saved moments apart cannot overwrite each other.
+ */
+export interface UpdateSessionNotesRequest {
+  notes?: string | null;
+  exerciseNotes?: Array<{ routineExerciseId: string; note: string | null }>;
+}
+
+export interface UpdateSessionNotesResponse {
+  notes: string | null;
+  exerciseNotes: SessionExerciseNote[];
+}
+
 /** Body of PUT /workouts/sessions/:id/exercises/:routineExerciseId/substitution. */
 export interface SubstituteSessionExerciseRequest {
   exerciseId: string;
@@ -252,9 +285,17 @@ export interface WorkoutSessionRecap {
   totalVolumeKg: number;
   completedSets: number;
   notes?: string | null;
+  /** LIVE-16: exercise notes of this workout, named, in the day's order. */
+  exerciseNotes?: SessionRecapExerciseNote[];
   records: SessionRecapRecord[];
   progressionChanges: ProgressionChange[];
   previousSession: PreviousSessionRecap | null;
+}
+
+export interface SessionRecapExerciseNote {
+  routineExerciseId: string;
+  exerciseName: string;
+  note: string;
 }
 
 // Session sharing (SOC-07) -------------------------------------------------
@@ -332,6 +373,8 @@ export interface SharedSessionRecap {
   records?: SessionRecapRecord[];
   progressionChanges?: ProgressionChange[];
   notes?: string | null;
+  /** LIVE-16: shared with the `notes` field. */
+  exerciseNotes?: SessionRecapExerciseNote[];
 }
 
 export interface WorkoutSessionSummary {
