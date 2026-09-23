@@ -2,6 +2,7 @@ import type { IsoDateString } from "./shared";
 import type { UserProfile } from "./user";
 import type { Routine, RoutineVersionSetup } from "./routine";
 import type { WorkoutSession } from "./workout";
+import type { SessionCorrection } from "./session-corrections";
 
 /**
  * EXPORT-01. Everything a member put into Sunnsteel, in one JSON document they
@@ -108,6 +109,8 @@ export interface AccountExportV1 {
   };
   routines: AccountExportRoutine[];
   workouts: WorkoutSession[];
+  /** LIVE-17: every saved correction of a workout, with its before and after values. */
+  workoutCorrections: Array<SessionCorrection & { sessionId: string }>;
   personalRecords: AccountExportPersonalRecord[];
   trainingEvents: AccountExportTrainingEvent[];
   goals: AccountExportGoal[];
