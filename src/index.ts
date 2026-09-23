@@ -17,3 +17,4 @@ export * from "./notifications";
 export * from "./push";
 export * from "./notification-preferences";
 export * from './training-partners';
+export * from "./account-deletion";
