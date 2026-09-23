@@ -6,6 +6,7 @@ export * from "./exercise";
 export * from "./goals";
 export * from './achievements';
 export * from "./routine";
+export * from "./training-blocks";
 export * from "./routine-sharing";
 export * from "./routine-discovery";
 export * from "./activity";
