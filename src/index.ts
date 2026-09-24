@@ -8,6 +8,7 @@ export * from './achievements';
 export * from "./routine";
 export * from "./training-blocks";
 export * from "./deloads";
+export * from "./deload-suggestions";
 export * from "./routine-sharing";
 export * from "./routine-discovery";
 export * from "./activity";
