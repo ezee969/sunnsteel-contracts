@@ -17,6 +17,7 @@ export * from "./workout";
 export * from "./session-corrections";
 export * from "./analytics";
 export * from "./training-signals";
+export * from "./training-block-comparison";
 export * from "./notifications";
 export * from "./push";
 export * from "./notification-preferences";
