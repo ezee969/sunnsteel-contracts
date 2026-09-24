@@ -99,6 +99,8 @@ export interface AccountExportV1 {
       restAlert: boolean;
       trainingReminder: boolean;
       streakAtRisk: boolean;
+      partnerSession: boolean;
+      partnerAchievement: boolean;
       quietHours: { startMinute: number; endMinute: number } | null;
       reminderMinuteOfDay: number | null;
     };
