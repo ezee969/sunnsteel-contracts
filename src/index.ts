@@ -5,6 +5,7 @@ export * from "./auth";
 export * from "./exercise";
 export * from "./goals";
 export * from './achievements';
+export * from "./set-kinds";
 export * from "./routine";
 export * from "./training-blocks";
 export * from "./deloads";

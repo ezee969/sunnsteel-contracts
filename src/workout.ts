@@ -1,3 +1,4 @@
+import type { SetKind } from './set-kinds';
 import type { SessionTemporaryOverride } from './deloads';
 import type { SessionTrainingBlock } from './training-blocks';
 import type {
@@ -22,6 +23,8 @@ export interface SetLog {
   weight?: number | null;
   rpe?: number | null;
   isCompleted: boolean;
+  /** LIVE-12: what this set was for in this workout. */
+  kind: SetKind;
   completedAt?: IsoDateString | null;
   createdAt: IsoDateString;
   updatedAt: IsoDateString;
@@ -96,6 +99,8 @@ export interface WorkoutSession {
         maxReps?: number | null;
         weight?: number | null;
         rir?: number | null;
+        /** LIVE-12; absent on snapshots captured before it: a working set. */
+        kind?: SetKind;
       }>;
     }>;
   };
@@ -182,6 +187,12 @@ export interface UpsertSetLogRequest {
   weight?: number;
   rpe?: number;
   isCompleted?: boolean;
+  /**
+   * LIVE-12: change what the set is for. Omitted, a new set takes its
+   * prescription's kind (an added set is working) and an existing one keeps
+   * its own.
+   */
+  kind?: SetKind;
 }
 
 /**

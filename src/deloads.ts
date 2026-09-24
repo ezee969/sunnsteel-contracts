@@ -1,3 +1,4 @@
+import { countsAsWork, type SetKind } from './set-kinds';
 import type {
   RoutineDay,
   RoutineScheduleMode,
@@ -57,11 +58,23 @@ const lighterOnGrid = (original: number, target: number, increment: number) => {
  * ROUT-16's one rule for what a deload is, shared so the preview the owner
  * reviews and the prescription the server stores cannot disagree: every load
  * drops by the chosen percentage, rounded to the exercise's own increment
- * (a load whose grid cannot express the cut keeps its weight), and `HALF` keeps the first half of each
- * exercise's sets (rounded up, so one set stays one). Reps, RIR, rest and everything else are
+ * (a load whose grid cannot express the cut keeps its weight), and `HALF` keeps every warm-up and
+ * the first half of each exercise's other sets (rounded up, so one set stays
+ * one), renumbered in order (LIVE-12). Reps, RIR, rest and everything else are
  * untouched. Returns null when nothing would be lighter -- the override is an
  * explicitly lighter prescription, never an unchanged copy.
  */
+/** Warm-ups stay; half of the rest (rounded up) stays, in order. */
+function halveSets<T extends { setNumber: number; kind?: SetKind }>(
+  sets: T[],
+): T[] {
+  const work = sets.filter((set) => countsAsWork(set.kind));
+  const keep = new Set(work.slice(0, Math.ceil(work.length / 2)));
+  return sets
+    .filter((set) => !countsAsWork(set.kind) || keep.has(set))
+    .map((set, index) => ({ ...set, setNumber: index + 1 }));
+}
+
 export function applyDeload(
   setup: RoutineVersionSetup,
   options: DeloadOptions,
@@ -72,9 +85,7 @@ export function applyDeload(
     ...day,
     exercises: day.exercises.map((exercise) => {
       const kept =
-        options.setMode === 'HALF'
-          ? exercise.sets.slice(0, Math.ceil(exercise.sets.length / 2))
-          : exercise.sets;
+        options.setMode === 'HALF' ? halveSets(exercise.sets) : exercise.sets;
       if (kept.length < exercise.sets.length) lighter = true;
       return {
         ...exercise,

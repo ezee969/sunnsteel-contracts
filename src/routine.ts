@@ -1,3 +1,4 @@
+import type { SetKind } from './set-kinds';
 import type { RoutineTemporaryOverridePlan } from './deloads';
 import type { RoutineTrainingBlockPlan } from './training-blocks';
 import type { RoutineLineage, RoutineVisibility } from './routine-sharing';
@@ -62,6 +63,8 @@ export interface RoutineSet {
   maxReps?: number | null;
   weight?: number | null;
   rir?: number | null;
+  /** LIVE-12; absent means a working set. */
+  kind?: SetKind;
 }
 
 export interface RoutineExercise {

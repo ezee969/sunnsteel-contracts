@@ -1,3 +1,4 @@
+import type { SetKind } from './set-kinds';
 import type { ProgressionChange, WorkoutSession } from './workout';
 import type {
   IsoDateString,
@@ -112,6 +113,7 @@ export interface ExercisePerformancePrescriptionSet {
   maxReps?: number | null;
   weightKg?: number | null;
   rir?: number | null;
+  kind?: SetKind;
 }
 
 export interface ExercisePerformancePrescription {
