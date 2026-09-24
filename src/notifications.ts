@@ -19,6 +19,9 @@ export const NOTIFICATION_KINDS = [
   'ACTIVITY_COMMENT',
   // SOC-09: one of four fixed, permissioned prompts from an active partner.
   'TRAINING_PARTNER_ENCOURAGEMENT',
+  // NOTIF-07: selected activity from a partner who currently shares it.
+  'TRAINING_PARTNER_SESSION',
+  'TRAINING_PARTNER_ACHIEVEMENT',
 ] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 
@@ -102,13 +105,45 @@ export interface TrainingPartnerEncouragementNotification
   encouragement: { kind: TrainingPartnerEncouragementKind };
 }
 
+interface TrainingPartnerActivityNotificationBase extends NotificationBase {
+  actor: {
+    id: string;
+    username: string;
+    name: string;
+    lastName: string | null;
+    avatarUrl: string | null;
+  };
+  /** Stable SOC-03 activity key whose current visibility authorizes the row. */
+  entryId: string;
+}
+
+/** NOTIF-07: one summary for a completed workout, never one per set or record. */
+export interface TrainingPartnerSessionNotification
+  extends TrainingPartnerActivityNotificationBase {
+  kind: 'TRAINING_PARTNER_SESSION';
+  session: {
+    id: string;
+    routineName: string;
+    dayName: string | null;
+  };
+}
+
+/** NOTIF-07: only an achievement earned live, never a historical backfill. */
+export interface TrainingPartnerAchievementNotification
+  extends TrainingPartnerActivityNotificationBase {
+  kind: 'TRAINING_PARTNER_ACHIEVEMENT';
+  achievement: { id: string; title: string };
+}
+
 /** Named to stay clear of the DOM's `Notification`. */
 export type AppNotification =
   | AchievementNotification
   | SessionProgressNotification
   | NewFollowerNotification
   | ActivityCommentNotification
-  | TrainingPartnerEncouragementNotification;
+  | TrainingPartnerEncouragementNotification
+  | TrainingPartnerSessionNotification
+  | TrainingPartnerAchievementNotification;
 
 /** GET /notifications */
 export interface NotificationsResponse {

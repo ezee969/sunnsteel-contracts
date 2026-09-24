@@ -8,13 +8,16 @@ import type { CalendarDate } from './schedule';
  *
  * There is deliberately no "channel" axis beside this. Web Push is the only
  * delivery channel that exists, so a channel switch would be the same switch
- * twice; the NOTIF-01 centre is gathered on read rather than delivered, and is
- * not something to turn off.
+ * twice. The two NOTIF-07 partner categories are explicit opt-ins and also
+ * govern their corresponding in-app rows; every earlier NOTIF-01 source stays
+ * gathered independently of these delivery controls.
  */
 export const NOTIFICATION_CATEGORIES = [
   'REST_ALERT',
   'TRAINING_REMINDER',
   'STREAK_AT_RISK',
+  'TRAINING_PARTNER_SESSION',
+  'TRAINING_PARTNER_ACHIEVEMENT',
 ] as const;
 export type NotificationCategory = (typeof NOTIFICATION_CATEGORIES)[number];
 

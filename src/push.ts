@@ -72,6 +72,8 @@ export const PUSH_PAYLOAD_KINDS = [
   'REST_ALERT',
   'TRAINING_REMINDER',
   'STREAK_AT_RISK',
+  'TRAINING_PARTNER_SESSION',
+  'TRAINING_PARTNER_ACHIEVEMENT',
 ] as const;
 export type PushPayloadKind = (typeof PUSH_PAYLOAD_KINDS)[number];
 
@@ -112,10 +114,30 @@ export interface StreakAtRiskPushPayload {
   tag: string;
 }
 
+/** NOTIF-07. A partner finished one workout they currently share. */
+export interface TrainingPartnerSessionPushPayload {
+  kind: 'TRAINING_PARTNER_SESSION';
+  title: string;
+  body: string;
+  url: string;
+  tag: string;
+}
+
+/** NOTIF-07. A partner earned one live achievement they currently share. */
+export interface TrainingPartnerAchievementPushPayload {
+  kind: 'TRAINING_PARTNER_ACHIEVEMENT';
+  title: string;
+  body: string;
+  url: string;
+  tag: string;
+}
+
 export type PushPayload =
   | RestAlertPushPayload
   | TrainingReminderPushPayload
-  | StreakAtRiskPushPayload;
+  | StreakAtRiskPushPayload
+  | TrainingPartnerSessionPushPayload
+  | TrainingPartnerAchievementPushPayload;
 
 /** A rest alert is refused beyond this far ahead. */
 export const REST_ALERT_MAX_LEAD_SECONDS = 3600;
