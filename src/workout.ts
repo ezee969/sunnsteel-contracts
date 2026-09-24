@@ -1,3 +1,4 @@
+import type { SessionTemporaryOverride } from './deloads';
 import type { SessionTrainingBlock } from './training-blocks';
 import type {
   IsoDateString,
@@ -57,6 +58,11 @@ export interface WorkoutSession {
    * the block's end never rewrites what the session was.
    */
   trainingBlock?: SessionTrainingBlock | null;
+  /**
+   * ROUT-16: the deload this session trained, or null. A deload session
+   * never advances progression.
+   */
+  temporaryOverride?: SessionTemporaryOverride | null;
   routine?: {
     id: string;
     name: string;
@@ -400,6 +406,8 @@ export interface WorkoutSessionSummary {
     dayName?: string | null;
     /** ROUT-15: the block trained, when it was one. */
     trainingBlockName?: string | null;
+    /** ROUT-16: set when the session trained a deload. */
+    temporaryOverrideKind?: 'DELOAD' | null;
   };
 }
 

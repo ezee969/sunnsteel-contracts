@@ -335,6 +335,8 @@ export interface WorkoutSessionSnapshotV1 {
   routineDay: NonNullable<WorkoutSession['routineDay']>;
   /** ROUT-15; absent on snapshots captured before blocks executed. */
   trainingBlock?: WorkoutSession['trainingBlock'];
+  /** ROUT-16; absent on snapshots captured before deloads existed. */
+  temporaryOverride?: WorkoutSession['temporaryOverride'];
 }
 
 export interface SetAccountTimeZoneRequest {

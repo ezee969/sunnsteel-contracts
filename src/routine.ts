@@ -1,3 +1,4 @@
+import type { RoutineTemporaryOverridePlan } from './deloads';
 import type { RoutineTrainingBlockPlan } from './training-blocks';
 import type { RoutineLineage, RoutineVisibility } from './routine-sharing';
 import type { TrainingExperienceLevel, TrainingGoal } from './user';
@@ -167,6 +168,11 @@ export interface Routine {
    * `days` separately.
    */
   trainingBlocks?: RoutineTrainingBlockPlan[];
+  /**
+   * ROUT-16: current and upcoming deloads as plans, each with its own
+   * working-copy days. Owner-only, and resolved with `resolveRoutinePlan`.
+   */
+  temporaryOverrides?: RoutineTemporaryOverridePlan[];
   createdAt: IsoDateString;
   updatedAt: IsoDateString;
 }

@@ -3,6 +3,7 @@ import type {
   RoutineScheduleMode,
   RoutineVersionSetup,
 } from './routine';
+import type { SessionTemporaryOverride, TemporaryOverrideKind } from './deloads';
 import type { CalendarDate } from './schedule';
 import type { IsoDateString } from './shared';
 
@@ -153,7 +154,10 @@ export function resolveActiveTrainingBlock<T extends DatedBlock>(
 
 /** What a routine plans for one date: its active block, else its baseline. */
 export interface ResolvedRoutinePlan<D> {
+  /** The block in force, also while a deload lightens it (ROUT-16). */
   block: SessionTrainingBlock & DatedBlock | null;
+  /** ROUT-16: the deload in force that date, or null. */
+  override: SessionTemporaryOverride & DatedBlock | null;
   scheduleMode: RoutineScheduleMode;
   restDays: number[];
   rotationWeekdays: number[];
@@ -177,6 +181,18 @@ export interface RoutinePlanSource<D> {
         days: D[];
       }
   > | null;
+  /** ROUT-16: deloads, which take precedence over the plan they lighten. */
+  temporaryOverrides?: ReadonlyArray<
+    DatedBlock & {
+      id: string;
+      kind: TemporaryOverrideKind;
+      scheduleMode: RoutineScheduleMode;
+      restDays: number[];
+      rotationWeekdays: number[];
+      nextRotationDayId: string | null;
+      days: D[];
+    }
+  > | null;
 }
 
 /**
@@ -184,14 +200,44 @@ export interface RoutinePlanSource<D> {
  * on a date - the schedule, the dashboard, a session start, reminders and the
  * partner schedule, on the frontend and the backend alike - asks this, so
  * weekly and rotation routines, and the baseline and a block, never disagree.
+ * ROUT-16: a deload covering the date wins over the plan it lightened; the
+ * block it lightened is still reported, since a deload never crosses a plan.
  */
 export function resolveRoutinePlan<D>(
   routine: RoutinePlanSource<D>,
   date: CalendarDate,
 ): ResolvedRoutinePlan<D> {
   const block = resolveActiveTrainingBlock(routine.trainingBlocks, date);
+  const deload = resolveActiveTrainingBlock(routine.temporaryOverrides, date);
+  const blockInForce = block
+    ? {
+        id: block.id,
+        seriesId: block.seriesId,
+        revision: block.revision,
+        name: block.name,
+        startDate: block.startDate,
+        endDate: block.endDate,
+      }
+    : null;
+  if (deload) {
+    return {
+      block: blockInForce,
+      override: {
+        id: deload.id,
+        kind: deload.kind,
+        startDate: deload.startDate,
+        endDate: deload.endDate,
+      },
+      scheduleMode: deload.scheduleMode,
+      restDays: deload.restDays,
+      rotationWeekdays: deload.rotationWeekdays,
+      nextRotationDayId: deload.nextRotationDayId,
+      days: deload.days,
+    };
+  }
   if (block) {
     return {
+      override: null,
       block: {
         id: block.id,
         seriesId: block.seriesId,
@@ -209,6 +255,7 @@ export function resolveRoutinePlan<D>(
   }
   return {
     block: null,
+    override: null,
     scheduleMode: routine.scheduleMode,
     restDays: routine.restDays,
     rotationWeekdays: routine.rotationWeekdays ?? [],
