@@ -6,6 +6,8 @@ export * from "./exercise";
 export * from "./goals";
 export * from './achievements';
 export * from "./set-kinds";
+export * from "./plate-loading";
+export * from "./warm-ups";
 export * from "./routine";
 export * from "./training-blocks";
 export * from "./deloads";

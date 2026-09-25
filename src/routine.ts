@@ -65,6 +65,12 @@ export interface RoutineSet {
   rir?: number | null;
   /** LIVE-12; absent means a working set. */
   kind?: SetKind;
+  /**
+   * LIVE-20: a generated warm-up's share of the first working set (0 is the
+   * empty bar). With the exercise following its load, the warm-up's weight
+   * is recalculated from it.
+   */
+  warmUpShare?: number | null;
 }
 
 export interface RoutineExercise {
@@ -74,6 +80,8 @@ export interface RoutineExercise {
   note?: string | null;
   progressionScheme: ProgressionScheme;
   minWeightIncrement: number;
+  /** LIVE-20: warm-ups with a share follow the first working set. */
+  warmUpsFollowLoad?: boolean;
   exercise: {
     id: string;
     name: string;
@@ -90,6 +98,8 @@ export interface CreateRoutineExerciseInput {
   note?: string;
   progressionScheme: ProgressionScheme;
   minWeightIncrement: number;
+  /** LIVE-20: warm-ups with a share follow the first working set. */
+  warmUpsFollowLoad?: boolean;
   sets: RoutineSet[];
 }
 
@@ -225,6 +235,8 @@ export interface RoutineVersionExercise {
   note: string | null;
   progressionScheme: ProgressionScheme;
   minWeightIncrement: number;
+  /** LIVE-20; absent in setups captured before it. */
+  warmUpsFollowLoad?: boolean;
   sets: RoutineSet[];
 }
 
