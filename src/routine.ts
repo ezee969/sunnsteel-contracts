@@ -82,6 +82,11 @@ export interface RoutineExercise {
   minWeightIncrement: number;
   /** LIVE-20: warm-ups with a share follow the first working set. */
   warmUpsFollowLoad?: boolean;
+  /**
+   * ROUT-12: done in rounds with the next exercise of the day (a superset,
+   * or a circuit of three to six); see `exerciseGroups`.
+   */
+  linkedToNext?: boolean;
   exercise: {
     id: string;
     name: string;
@@ -100,6 +105,11 @@ export interface CreateRoutineExerciseInput {
   minWeightIncrement: number;
   /** LIVE-20: warm-ups with a share follow the first working set. */
   warmUpsFollowLoad?: boolean;
+  /**
+   * ROUT-12: done in rounds with the next exercise of the day (a superset,
+   * or a circuit of three to six); see `exerciseGroups`.
+   */
+  linkedToNext?: boolean;
   sets: RoutineSet[];
 }
 
@@ -237,6 +247,11 @@ export interface RoutineVersionExercise {
   minWeightIncrement: number;
   /** LIVE-20; absent in setups captured before it. */
   warmUpsFollowLoad?: boolean;
+  /**
+   * ROUT-12: done in rounds with the next exercise of the day (a superset,
+   * or a circuit of three to six); see `exerciseGroups`.
+   */
+  linkedToNext?: boolean;
   sets: RoutineSet[];
 }
 

@@ -84,6 +84,8 @@ export interface WorkoutSession {
       note?: string | null;
       progressionScheme: ProgressionScheme;
       minWeightIncrement: number;
+      /** ROUT-12: done in rounds with the next exercise of the day. */
+      linkedToNext?: boolean;
       exercise: {
         id: string;
         name: string;
