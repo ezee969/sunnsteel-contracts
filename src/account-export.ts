@@ -120,6 +120,19 @@ export interface AccountExportV1 {
   scheduleOverrides: AccountExportScheduleOverride[];
   exercises: {
     starred: Array<{ exerciseId: string; name: string; starredAt: IsoDateString }>;
+    /** EXER-06: the member's own exercises, archived ones included. */
+    custom?: Array<{
+      id: string;
+      name: string;
+      primaryMuscles: string[];
+      secondaryMuscles: string[];
+      equipmentRequired: string[];
+      movementPattern: string | null;
+      mechanic: string | null;
+      note: string | null;
+      archivedAt: IsoDateString | null;
+      createdAt: IsoDateString;
+    }>;
   };
   social: {
     following: Array<AccountExportMember & { since: IsoDateString }>;
