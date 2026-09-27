@@ -4,6 +4,7 @@ export * from "./moderation";
 export * from "./auth";
 export * from "./exercise";
 export * from "./goals";
+export * from "./body-measurements";
 export * from './achievements';
 export * from "./set-kinds";
 export * from "./plate-loading";

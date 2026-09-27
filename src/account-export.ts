@@ -3,6 +3,7 @@ import type { UserProfile } from "./user";
 import type { Routine, RoutineVersionSetup } from "./routine";
 import type { WorkoutSession } from "./workout";
 import type { SessionCorrection } from "./session-corrections";
+import type { BodyMeasurementValues } from "./body-measurements";
 
 /**
  * EXPORT-01. Everything a member put into Sunnsteel, in one JSON document they
@@ -65,6 +66,13 @@ export interface AccountExportTrainingEvent {
   payload: unknown;
 }
 
+/** Weight in kilograms, lengths in centimetres. */
+export interface AccountExportBodyMeasurement extends BodyMeasurementValues {
+  date: string;
+  createdAt: IsoDateString;
+  updatedAt: IsoDateString;
+}
+
 export interface AccountExportGoal {
   type: string;
   direction: string;
@@ -116,6 +124,8 @@ export interface AccountExportV1 {
   personalRecords: AccountExportPersonalRecord[];
   trainingEvents: AccountExportTrainingEvent[];
   goals: AccountExportGoal[];
+  /** PROG-12: every dated body weight and measurement entry. */
+  bodyMeasurements?: AccountExportBodyMeasurement[];
   trainingLocations: AccountExportTrainingLocation[];
   scheduleOverrides: AccountExportScheduleOverride[];
   exercises: {

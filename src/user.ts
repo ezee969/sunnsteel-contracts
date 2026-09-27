@@ -125,6 +125,8 @@ export interface ProfilePrivacySettings {
   routines: ProfileVisibility;
   achievements: ProfileVisibility;
   bodyMetrics: ProfileVisibility;
+  /** PROG-12: the dated weight and measurement history, separate from bodyMetrics. */
+  bodyProgress: ProfileVisibility;
 }
 
 export interface ProfileDiscoverySettings {
@@ -142,6 +144,7 @@ export interface ProfileViewerAccess {
   routines: boolean;
   achievements: boolean;
   bodyMetrics: boolean;
+  bodyProgress: boolean;
 }
 
 export interface PublicTrainingSummary {
@@ -312,14 +315,22 @@ export interface UpdateProfileRequest {
   weight?: number | null;
   height?: number | null;
   weightUnit?: WeightUnit;
+  /**
+   * PROG-12: the member's local date (YYYY-MM-DD). A changed weight is also
+   * recorded as that date's body measurement; without it the server uses UTC.
+   */
+  localDate?: string;
 }
 
 export type UpdateProfilePrivacyRequest = Omit<
   ProfilePrivacySettings,
-  'biography' | 'location' | 'trainingIdentity'
+  'biography' | 'location' | 'trainingIdentity' | 'bodyProgress'
 > &
   Partial<
-    Pick<ProfilePrivacySettings, 'biography' | 'location' | 'trainingIdentity'>
+    Pick<
+      ProfilePrivacySettings,
+      'biography' | 'location' | 'trainingIdentity' | 'bodyProgress'
+    >
   >;
 
 export type UpdateProfileDiscoveryRequest = ProfileDiscoverySettings;
