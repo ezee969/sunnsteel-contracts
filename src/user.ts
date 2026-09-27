@@ -1,3 +1,4 @@
+import type { DashboardLayout } from "./dashboard-layout";
 import type {
   IsoDateString,
   Sex,
@@ -264,6 +265,12 @@ export interface UserProfile {
    * moderates is not a fact other members are owed.
    */
   isModerator: boolean;
+  /**
+   * DASH-05 / PREF-03: the owner's dashboard order and hidden sections,
+   * already normalized. The server always sends it; a client treats a
+   * missing one as the default layout.
+   */
+  dashboardLayout?: DashboardLayout;
   followerCount: number;
   followingCount: number;
   createdAt: IsoDateString;
