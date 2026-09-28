@@ -1,4 +1,5 @@
 import type { DashboardLayout } from "./dashboard-layout";
+import type { AppLocale } from "./locale";
 import type {
   IsoDateString,
   Sex,
@@ -271,6 +272,11 @@ export interface UserProfile {
    * missing one as the default layout.
    */
   dashboardLayout?: DashboardLayout;
+  /**
+   * I18N-02: the language the owner chose, or null to follow each device.
+   * On the owner's own profile only.
+   */
+  locale?: AppLocale | null;
   followerCount: number;
   followingCount: number;
   createdAt: IsoDateString;

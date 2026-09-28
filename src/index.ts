@@ -1,6 +1,7 @@
 export * from "./shared";
 export * from "./user";
 export * from "./dashboard-layout";
+export * from "./locale";
 export * from "./moderation";
 export * from "./auth";
 export * from "./exercise";
