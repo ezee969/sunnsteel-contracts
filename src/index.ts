@@ -31,3 +31,4 @@ export * from "./notification-preferences";
 export * from './training-partners';
 export * from "./account-deletion";
 export * from "./account-export";
+export * from "./api-errors";
