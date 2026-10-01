@@ -29,8 +29,18 @@ export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 export const NOTIFICATIONS_LOOKBACK_DAYS = 30;
 /** Notifications are kept this many days, then removed. */
 export const NOTIFICATIONS_RETENTION_DAYS = 90;
-/** The list returns at most this many, newest first. */
-export const NOTIFICATIONS_LIST_LIMIT = 50;
+/**
+ * NOTIF-09: the list is read in pages, newest first. A page holds this many
+ * unless the client asks for fewer.
+ */
+export const NOTIFICATIONS_PAGE_SIZE = 20;
+/** The most notifications one page may hold. */
+export const NOTIFICATIONS_PAGE_SIZE_MAX = 50;
+/**
+ * The most the list returned in one read before NOTIF-09.
+ * @deprecated Read pages instead; this is `NOTIFICATIONS_PAGE_SIZE_MAX`.
+ */
+export const NOTIFICATIONS_LIST_LIMIT = NOTIFICATIONS_PAGE_SIZE_MAX;
 
 interface NotificationBase {
   id: string;
@@ -145,10 +155,24 @@ export type AppNotification =
   | TrainingPartnerSessionNotification
   | TrainingPartnerAchievementNotification;
 
+/** GET /notifications?limit=&cursor= */
+export interface NotificationsQuery {
+  /** 1 to `NOTIFICATIONS_PAGE_SIZE_MAX`; `NOTIFICATIONS_PAGE_SIZE` when left out. */
+  limit?: number;
+  /** Opaque; the previous page's `nextCursor`. Left out for the first page. */
+  cursor?: string;
+}
+
 /** GET /notifications */
 export interface NotificationsResponse {
   notifications: AppNotification[];
+  /** Every unread notification of the account, not only this page's. */
   unreadCount: number;
+  /**
+   * Opaque; pass it back as `cursor` for the next, older page. Null when
+   * nothing older is kept: the list ends at `NOTIFICATIONS_RETENTION_DAYS`.
+   */
+  nextCursor: string | null;
 }
 
 /** POST /notifications/read. Without ids, every notification is marked read. */
