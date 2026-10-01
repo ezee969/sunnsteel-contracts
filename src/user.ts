@@ -129,6 +129,12 @@ export interface ProfilePrivacySettings {
   bodyMetrics: ProfileVisibility;
   /** PROG-12: the dated weight and measurement history, separate from bodyMetrics. */
   bodyProgress: ProfileVisibility;
+  /**
+   * ACH-10: the current Renaissance rank, wherever another member sees it
+   * (the profile header, the Achievements section, a featured rank, the
+   * profile card). The one setting that starts at `PUBLIC`.
+   */
+  rank: ProfileVisibility;
 }
 
 export interface ProfileDiscoverySettings {
@@ -147,6 +153,7 @@ export interface ProfileViewerAccess {
   achievements: boolean;
   bodyMetrics: boolean;
   bodyProgress: boolean;
+  rank: boolean;
 }
 
 export interface PublicTrainingSummary {
@@ -237,6 +244,7 @@ export type FeaturedProfileItem =
 
 /** Complete earned ledger allowed by the profile achievements privacy rule. */
 export interface PublicProfileAchievements {
+  /** Null unless the `rank` rule also allows the viewer to see it (ACH-10). */
   rank: RenaissanceRankDefinition | null;
   achievements: EarnedAchievement[];
   comeback: ComebackRecognitionSummary | null;
@@ -309,6 +317,11 @@ export interface PublicUserProfile {
   featuredItems: FeaturedProfileItem[];
   achievements?: PublicProfileAchievements;
   bodyMetrics?: PublicBodyMetrics;
+  /**
+   * ACH-10: the member's current rank, present only when `viewerAccess.rank`
+   * allows it; null while their analytics are not ready.
+   */
+  rank?: RenaissanceRankDefinition | null;
 }
 
 export interface UpdateProfileRequest {
@@ -337,12 +350,12 @@ export interface UpdateProfileRequest {
 
 export type UpdateProfilePrivacyRequest = Omit<
   ProfilePrivacySettings,
-  'biography' | 'location' | 'trainingIdentity' | 'bodyProgress'
+  'biography' | 'location' | 'trainingIdentity' | 'bodyProgress' | 'rank'
 > &
   Partial<
     Pick<
       ProfilePrivacySettings,
-      'biography' | 'location' | 'trainingIdentity' | 'bodyProgress'
+      'biography' | 'location' | 'trainingIdentity' | 'bodyProgress' | 'rank'
     >
   >;
 
