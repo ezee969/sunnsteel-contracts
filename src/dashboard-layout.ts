@@ -9,6 +9,8 @@
  */
 export const DASHBOARD_SECTION_IDS = [
   "this-week",
+  // DASH-04: the member's goals and the ACH-06 suggestions.
+  "goals",
   "stats",
   "recent-activity",
   "personal-records",

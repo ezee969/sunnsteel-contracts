@@ -136,6 +136,12 @@ export interface AccountExportV1 {
    * NAV-03: the results the member last opened from search, newest first.
    * `target` names another member by username and anything else by its id.
    */
+  /** ACH-06: suggestions the member set aside with "Not now". */
+  goalSuggestionDismissals?: Array<{
+    key: string;
+    targetValue: number;
+    dismissedAt: IsoDateString;
+  }>;
   recentSearches?: Array<{
     kind: 'MEMBER' | 'EXERCISE' | 'ROUTINE' | 'WORKOUT';
     target: string;
