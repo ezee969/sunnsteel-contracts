@@ -87,3 +87,57 @@ export interface SearchPageQuery {
 export type MemberSearchPage = SearchPage<UserSearchResponse>;
 export type RoutineSearchPage = SearchPage<SharedRoutineSearchResult>;
 export type WorkoutSearchPage = SearchPage<WorkoutSessionSummary>;
+
+// Recent searches (NAV-03) ---------------------------------------------------
+//
+// The last results the member opened from search -- never what they typed --
+// stored on the account so they follow the member across devices and leave
+// nothing on a shared device after sign-out. A row is only a reference: every
+// read resolves it again under the rule that governs its target, so a member
+// who blocks the viewer or is hidden by a moderator, a routine the viewer may
+// no longer read, or anything deleted simply drops out (and its row with it).
+
+/** The most recent results an account keeps; opening another drops the oldest. */
+export const RECENT_SEARCHES_MAX = 10;
+
+/** What a recent result points at. A routine is the member's own or shared. */
+export const RECENT_SEARCH_KINDS = ['MEMBER', 'EXERCISE', 'ROUTINE', 'WORKOUT'] as const;
+export type RecentSearchKind = (typeof RECENT_SEARCH_KINDS)[number];
+
+/** POST /search/recent -- the member opened this result from search. */
+export interface RecordRecentSearchRequest {
+  kind: RecentSearchKind;
+  targetId: string;
+}
+
+/** The exercise as a recent result: enough to name it and open its page. */
+export interface RecentExercise {
+  id: string;
+  /** The stored name; the client shows a catalog name in its language. */
+  name: string;
+  isCustom: boolean;
+  archivedAt: string | null;
+}
+
+/** A routine as a recent result. `author` is null for the member's own. */
+export interface RecentRoutine extends SharedRoutineSummary {
+  author: SharedRoutineOwner | null;
+  isArchived: boolean;
+}
+
+interface RecentSearchBase {
+  openedAt: string;
+}
+
+export type RecentSearchItem = RecentSearchBase &
+  (
+    | { kind: 'MEMBER'; member: UserSearchResponse }
+    | { kind: 'EXERCISE'; exercise: RecentExercise }
+    | { kind: 'ROUTINE'; routine: RecentRoutine }
+    | { kind: 'WORKOUT'; session: WorkoutSessionSummary }
+  );
+
+/** GET /search/recent, and the answer to every write: newest first. */
+export interface RecentSearchesResponse {
+  items: RecentSearchItem[];
+}

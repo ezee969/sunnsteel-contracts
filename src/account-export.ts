@@ -128,6 +128,15 @@ export interface AccountExportV1 {
   bodyMeasurements?: AccountExportBodyMeasurement[];
   trainingLocations: AccountExportTrainingLocation[];
   scheduleOverrides: AccountExportScheduleOverride[];
+  /**
+   * NAV-03: the results the member last opened from search, newest first.
+   * `target` names another member by username and anything else by its id.
+   */
+  recentSearches?: Array<{
+    kind: 'MEMBER' | 'EXERCISE' | 'ROUTINE' | 'WORKOUT';
+    target: string;
+    openedAt: IsoDateString;
+  }>;
   exercises: {
     starred: Array<{ exerciseId: string; name: string; starredAt: IsoDateString }>;
     /** EXER-06: the member's own exercises, archived ones included. */
