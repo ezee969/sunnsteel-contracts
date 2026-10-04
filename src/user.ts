@@ -1,5 +1,6 @@
 import type { DashboardLayout } from "./dashboard-layout";
 import type { AppLocale } from "./locale";
+import type { OnboardingState } from "./onboarding";
 import type { LengthUnit, WeekStartsOn } from "./regional";
 import type {
   IsoDateString,
@@ -291,6 +292,8 @@ export interface UserProfile {
    * it; a client treats a missing one as Monday (`DEFAULT_WEEK_STARTS_ON`).
    */
   weekStartsOn?: WeekStartsOn;
+  /** ONBOARD-01: how far the account has come through onboarding. */
+  onboarding?: OnboardingState;
   /** PREF-04: how lengths are shown; a missing one is centimetres. */
   lengthUnit?: LengthUnit;
   followerCount: number;

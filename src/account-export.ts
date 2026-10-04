@@ -117,6 +117,8 @@ export interface AccountExportV1 {
     weekStartsOn?: number;
     /** PREF-04: how lengths are shown; every length in the file is cm. */
     lengthUnit?: 'CM' | 'IN';
+    /** ONBOARD-01: the onboarding version completed and steps done since. */
+    onboarding?: { completedVersion: number; stepsDone: string[] };
     plateauMinSessions: number;
     activitySharingDefaults: Array<{ type: string; audience: string }>;
     activityEntryAudiences: Array<{ entryKey: string; audience: string }>;

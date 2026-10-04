@@ -3,6 +3,7 @@ export * from "./user";
 export * from "./dashboard-layout";
 export * from "./locale";
 export * from "./regional";
+export * from "./onboarding";
 export * from "./moderation";
 export * from "./auth";
 export * from "./exercise";
