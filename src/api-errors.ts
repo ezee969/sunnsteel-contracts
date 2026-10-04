@@ -59,6 +59,9 @@ export const API_ERROR_MESSAGES = {
   ANALYTICS_SNAPSHOTS_PREPARING:
     "Historical snapshots are still being prepared; retry after analytics setup",
   RATE_LIMITED: "ThrottlerException: Too Many Requests",
+  // PREF-04: the plan a workout trains is resolved in the account's zone.
+  TIME_ZONE_LIVE_WORKOUT:
+    "Finish or discard the workout in progress before changing your time zone.",
 
   // ── Routines ───────────────────────────────────────────────────────────
   ROUTINE_DAYS_MAX: "A routine has at most {max} days",

@@ -113,6 +113,10 @@ export interface AccountExportV1 {
       reminderMinuteOfDay: number | null;
     };
     timeZone: string | null;
+    /** PREF-04: 1 Monday, 0 Sunday. */
+    weekStartsOn?: number;
+    /** PREF-04: how lengths are shown; every length in the file is cm. */
+    lengthUnit?: 'CM' | 'IN';
     plateauMinSessions: number;
     activitySharingDefaults: Array<{ type: string; audience: string }>;
     activityEntryAudiences: Array<{ entryKey: string; audience: string }>;

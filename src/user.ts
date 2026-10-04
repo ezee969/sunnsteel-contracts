@@ -1,5 +1,6 @@
 import type { DashboardLayout } from "./dashboard-layout";
 import type { AppLocale } from "./locale";
+import type { LengthUnit, WeekStartsOn } from "./regional";
 import type {
   IsoDateString,
   Sex,
@@ -285,6 +286,13 @@ export interface UserProfile {
    * On the owner's own profile only.
    */
   locale?: AppLocale | null;
+  /**
+   * PREF-04: the weekday the owner's weeks start on. The server always sends
+   * it; a client treats a missing one as Monday (`DEFAULT_WEEK_STARTS_ON`).
+   */
+  weekStartsOn?: WeekStartsOn;
+  /** PREF-04: how lengths are shown; a missing one is centimetres. */
+  lengthUnit?: LengthUnit;
   followerCount: number;
   followingCount: number;
   createdAt: IsoDateString;
@@ -341,6 +349,8 @@ export interface UpdateProfileRequest {
   weight?: number | null;
   height?: number | null;
   weightUnit?: WeightUnit;
+  /** PREF-04: how lengths are shown. `height` is always centimetres. */
+  lengthUnit?: LengthUnit;
   /**
    * PROG-12: the member's local date (YYYY-MM-DD). A changed weight is also
    * recorded as that date's body measurement; without it the server uses UTC.
