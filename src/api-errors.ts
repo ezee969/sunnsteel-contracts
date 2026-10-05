@@ -149,6 +149,19 @@ export const API_ERROR_MESSAGES = {
     "This exercise already has completed sets. Swap it before completing any.",
   NOTES_DISCARDED_SESSION: "A discarded workout cannot take notes",
 
+  // ── Linear periodization (ROUT-17 to ROUT-19) ──────────────────────────
+  LINEAR_BLOCK_INVALID: "This exercise's block is not valid: {reason}",
+  LINEAR_BLOCK_EXTRA_SET: "An exercise on an 8-week block takes no extra sets",
+  LINEAR_BLOCK_KIND_FIXED:
+    "The working sets of an 8-week block cannot change kind",
+  LINEAR_BLOCK_LOAD_FIXED:
+    "The load of an 8-week block is prescribed and cannot be changed",
+  LINEAR_BLOCK_SWAP_ROUTINE:
+    "An exercise on an 8-week block can be swapped for this workout only",
+  LINEAR_BLOCK_NOT_LINEAR: "This exercise is not on an 8-week block",
+  LINEAR_BLOCK_NOT_FINISHED:
+    "This exercise's block has not finished, so there is nothing to choose yet",
+
   // ── Corrections (LIVE-17) ──────────────────────────────────────────────
   CORRECTION_NOT_COMPLETED: "Only a completed workout can be corrected",
   CORRECTION_NOT_LATEST: "Only your most recent workout can be corrected",

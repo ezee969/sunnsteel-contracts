@@ -101,6 +101,11 @@ export interface CorrectSessionResponse {
    * that edit.
    */
   progressionKept: Array<{ exerciseId: string; exerciseName: string }>;
+  /**
+   * ROUT-17: LP exercises whose block had moved on since this workout, so
+   * the correction did not change it. Absent before ROUT-17.
+   */
+  linearBlockKept?: Array<{ exerciseId: string; exerciseName: string }>;
 }
 
 /**

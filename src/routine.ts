@@ -1,4 +1,5 @@
 import type { SetKind } from './set-kinds';
+import type { LinearPeriodizationState } from './linear-periodization';
 import type { RoutineTemporaryOverridePlan } from './deloads';
 import type { RoutineTrainingBlockPlan } from './training-blocks';
 import type { RoutineLineage, RoutineVisibility } from './routine-sharing';
@@ -87,6 +88,12 @@ export interface RoutineExercise {
    * or a circuit of three to six); see `exerciseGroups`.
    */
   linkedToNext?: boolean;
+  /**
+   * ROUT-17: on a `LINEAR_PERIODIZATION` exercise, where the slot is in its
+   * block. Null on any other scheme, and on an LP exercise nobody has given
+   * a reference max yet (a shared or cloned routine drops the owner's).
+   */
+  linearPeriodization?: LinearPeriodizationState | null;
   exercise: {
     id: string;
     name: string;
@@ -110,6 +117,12 @@ export interface CreateRoutineExerciseInput {
    * or a circuit of three to six); see `exerciseGroups`.
    */
   linkedToNext?: boolean;
+  /**
+   * ROUT-17: on a `LINEAR_PERIODIZATION` exercise, where the slot is in its
+   * block. Null on any other scheme, and on an LP exercise nobody has given
+   * a reference max yet (a shared or cloned routine drops the owner's).
+   */
+  linearPeriodization?: LinearPeriodizationState | null;
   sets: RoutineSet[];
 }
 
@@ -252,6 +265,12 @@ export interface RoutineVersionExercise {
    * or a circuit of three to six); see `exerciseGroups`.
    */
   linkedToNext?: boolean;
+  /**
+   * ROUT-17: on a `LINEAR_PERIODIZATION` exercise, where the slot is in its
+   * block. Null on any other scheme, and on an LP exercise nobody has given
+   * a reference max yet (a shared or cloned routine drops the owner's).
+   */
+  linearPeriodization?: LinearPeriodizationState | null;
   sets: RoutineSet[];
 }
 

@@ -1,4 +1,5 @@
 import type { SetKind } from './set-kinds';
+import type { LinearPeriodizationState } from './linear-periodization';
 import type { SessionTemporaryOverride } from './deloads';
 import type { SessionTrainingBlock } from './training-blocks';
 import type {
@@ -86,6 +87,11 @@ export interface WorkoutSession {
       minWeightIncrement: number;
       /** ROUT-12: done in rounds with the next exercise of the day. */
       linkedToNext?: boolean;
+      /**
+       * ROUT-17: the slot's block as it stood when the workout started; the
+       * sets' weights are the step's prescribed loads.
+       */
+      linearPeriodization?: LinearPeriodizationState | null;
       exercise: {
         id: string;
         name: string;
@@ -174,10 +180,29 @@ export interface ProgressionChange {
   sets: ProgressionSetChange[];
 }
 
+/**
+ * ROUT-17/ROUT-18: one LP slot's block moved by a completed workout -- a step
+ * done, the block finished, or the recovery step done and the next block
+ * begun. `after.phase === 'FINISHED'` with `before.phase === 'BLOCK'` is the
+ * block finishing; its estimate is `after.estimatedMaxKg`, from
+ * `after.samples`.
+ */
+export interface LinearBlockChange {
+  routineExerciseId: string;
+  exerciseId: string;
+  exerciseName: string;
+  /** The exercise's increment, kg, for rounding the estimate's sets. */
+  minWeightIncrementKg: number;
+  before: LinearPeriodizationState;
+  after: LinearPeriodizationState;
+}
+
 /** Stable successful response of PATCH /workouts/sessions/:id/finish. */
 export interface FinishWorkoutResponse {
   session: WorkoutSession;
   progressionChanges: ProgressionChange[];
+  /** ROUT-17; absent from servers before it. */
+  linearBlockChanges?: LinearBlockChange[];
   recap: WorkoutSessionRecap | null;
 }
 
@@ -315,6 +340,10 @@ export interface WorkoutSessionRecap {
   exerciseNotes?: SessionRecapExerciseNote[];
   records: SessionRecapRecord[];
   progressionChanges: ProgressionChange[];
+  /** ROUT-17/ROUT-18: LP blocks this workout moved; absent before them. */
+  linearBlockChanges?: LinearBlockChange[];
+  /** The routine trained, null once it was deleted; absent before ROUT-18. */
+  routineId?: string | null;
   previousSession: PreviousSessionRecap | null;
 }
 

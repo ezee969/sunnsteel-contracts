@@ -11,6 +11,7 @@ export * from "./goals";
 export * from "./body-measurements";
 export * from './achievements';
 export * from "./set-kinds";
+export * from "./linear-periodization";
 export * from "./plate-loading";
 export * from "./warm-ups";
 export * from "./exercise-groups";

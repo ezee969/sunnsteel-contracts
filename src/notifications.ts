@@ -22,6 +22,8 @@ export const NOTIFICATION_KINDS = [
   // NOTIF-07: selected activity from a partner who currently shares it.
   'TRAINING_PARTNER_SESSION',
   'TRAINING_PARTNER_ACHIEVEMENT',
+  // ROUT-18: an LP exercise finished its 8-step block.
+  'LINEAR_BLOCK_FINISHED',
 ] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 
@@ -145,6 +147,21 @@ export interface TrainingPartnerAchievementNotification
   achievement: { id: string; title: string };
 }
 
+/**
+ * ROUT-18: an exercise finished its 8-step block in a completed workout. The
+ * estimate is an estimate, never a tested max, and null when the logs did not
+ * allow one. The link is the routine, where the next block is chosen.
+ */
+export interface LinearBlockFinishedNotification extends NotificationBase {
+  kind: 'LINEAR_BLOCK_FINISHED';
+  routine: { id: string; name: string };
+  exercise: { id: string; name: string };
+  sessionId: string;
+  /** The finished block's reference max, kg. */
+  referenceMaxKg: number;
+  estimatedMaxKg: number | null;
+}
+
 /** Named to stay clear of the DOM's `Notification`. */
 export type AppNotification =
   | AchievementNotification
@@ -153,7 +170,8 @@ export type AppNotification =
   | ActivityCommentNotification
   | TrainingPartnerEncouragementNotification
   | TrainingPartnerSessionNotification
-  | TrainingPartnerAchievementNotification;
+  | TrainingPartnerAchievementNotification
+  | LinearBlockFinishedNotification;
 
 /** GET /notifications?limit=&cursor= */
 export interface NotificationsQuery {

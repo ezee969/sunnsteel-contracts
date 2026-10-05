@@ -21,6 +21,8 @@ export const PROGRESSION_SCHEMES = [
   'NONE',
   'DOUBLE_PROGRESSION',
   'DYNAMIC_DOUBLE_PROGRESSION',
+  // ROUT-17: an 8-step block by percentage of a reference max and target RIR.
+  'LINEAR_PERIODIZATION',
 ] as const;
 export type ProgressionScheme = (typeof PROGRESSION_SCHEMES)[number];
 
