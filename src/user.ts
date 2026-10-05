@@ -1,5 +1,6 @@
 import type { DashboardLayout } from "./dashboard-layout";
 import type { AppLocale } from "./locale";
+import type { MemberMessagingState, MessagePermission } from "./messages";
 import type { OnboardingState } from "./onboarding";
 import type { LengthUnit, WeekStartsOn } from "./regional";
 import type {
@@ -294,6 +295,8 @@ export interface UserProfile {
   weekStartsOn?: WeekStartsOn;
   /** ONBOARD-01: how far the account has come through onboarding. */
   onboarding?: OnboardingState;
+  /** MSG-01: who may start a conversation with this member. */
+  messagePermission?: MessagePermission;
   /** PREF-04: how lengths are shown; a missing one is centimetres. */
   lengthUnit?: LengthUnit;
   followerCount: number;
@@ -333,6 +336,11 @@ export interface PublicUserProfile {
    * allows it; null while their analytics are not ready.
    */
   rank?: RenaissanceRankDefinition | null;
+  /**
+   * MSG-01: on the authenticated read only, whether the viewer may start a
+   * conversation with this member and the one they already share.
+   */
+  messaging?: MemberMessagingState;
 }
 
 export interface UpdateProfileRequest {

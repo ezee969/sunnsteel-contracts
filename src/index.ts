@@ -36,3 +36,4 @@ export * from "./account-export";
 export * from "./api-errors";
 export * from "./search";
 export * from "./realtime";
+export * from "./messages";

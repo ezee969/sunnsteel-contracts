@@ -10,8 +10,11 @@
 /** GET, with the usual bearer token. */
 export const REALTIME_STREAM_PATH = "/realtime/stream";
 
-/** What a signal can say is out of date. `MSG-01` adds conversations. */
-export const REALTIME_TOPICS = ["notifications"] as const;
+/**
+ * What a signal can say is out of date. `conversations` (MSG-01): the
+ * member's conversation list and the messages of each.
+ */
+export const REALTIME_TOPICS = ["notifications", "conversations"] as const;
 export type RealtimeTopic = (typeof REALTIME_TOPICS)[number];
 
 export type RealtimeEvent =

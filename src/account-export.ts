@@ -187,6 +187,17 @@ export interface AccountExportV1 {
       reaction: string;
       createdAt: IsoDateString;
     }>;
+    /**
+     * MSG-01: the messages the member wrote and has not deleted, each with
+     * the member it was sent to (null once that account was deleted). Messages
+     * written to them belong to their authors and are not included.
+     */
+    messagesSent?: Array<{
+      to: AccountExportMember | null;
+      conversationId: string;
+      body: string;
+      createdAt: IsoDateString;
+    }>;
     reportsFiled: Array<{
       subjectKind: string;
       reason: string;

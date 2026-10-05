@@ -38,6 +38,8 @@ export const API_ERROR_MESSAGES = {
   REPORT_NOT_FOUND: "Report not found",
   REPORT_SUBJECT_NOT_FOUND: "Subject not found",
   REPORTED_CONTENT_GONE: "The reported content no longer exists",
+  CONVERSATION_NOT_FOUND: "Conversation not found",
+  MESSAGE_NOT_FOUND: "Message not found",
   SHARE_LINK_NOT_FOUND: "Share link not found",
   LINK_NOT_FOUND: "Link not found",
   SHARED_SESSION_NOT_FOUND: "Shared session not found",
@@ -209,6 +211,16 @@ export const API_ERROR_MESSAGES = {
   ENCOURAGEMENTS_MAX:
     "You can send this partner at most {max} encouragements in 24 hours.",
   ENCOURAGEMENT_RETRY: "Please retry the encouragement.",
+
+  // ── Direct messages (MSG-01) ───────────────────────────────────────────
+  MESSAGE_SELF: "You cannot message yourself",
+  MESSAGE_LENGTH:
+    "A message must not be empty and may be at most {max} characters.",
+  MESSAGES_PER_MINUTE: "You can send at most {max} messages a minute.",
+  CONVERSATIONS_PER_DAY: "You can start at most {max} new conversations a day.",
+  MESSAGE_NOT_ADMITTED: "This member is not taking messages from you.",
+  CONVERSATION_CLOSED: "This conversation can no longer receive messages.",
+  MESSAGING_UNAVAILABLE: "Messaging is not available for this account.",
 
   // ── Account and settings ───────────────────────────────────────────────
   ACCOUNT_CONFLICT: "Account conflict for this email",
