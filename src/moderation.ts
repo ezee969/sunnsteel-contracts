@@ -49,6 +49,10 @@ export const REPORT_SUBJECT_KINDS = [
   // is content its owner created for themselves and shared, where a comment is
   // aimed at somebody else.
   'COMMENT',
+  // MSG-09. A message has no page of its own and is not shared with anyone but
+  // the other participant, so its report captures what that participant could
+  // see -- the message and up to five before it -- for the moderator to read.
+  'MESSAGE',
 ] as const;
 export type ReportSubjectKind = (typeof REPORT_SUBJECT_KINDS)[number];
 
@@ -73,7 +77,10 @@ export const REPORTS_PER_DAY_MAX = 20;
 /** POST /reports */
 export interface CreateReportRequest {
   subjectKind: ReportSubjectKind;
-  /** A member id or username, a routine id, or a session share token. */
+  /**
+   * A member id or username, a routine id, a session share token, a comment
+   * id, or a message id in a conversation the reporter is in (MSG-09).
+   */
   subjectId: string;
   reason: ReportReason;
   /** Optional context from the reporter, never required. */
@@ -123,6 +130,11 @@ export const MODERATION_ACTION_KINDS = [
   'DISMISS_REPORT',
   'HIDE_SUBJECT',
   'RESTORE_SUBJECT',
+  // MSG-09. A power over an account rather than over one thing it made: it
+  // stops the account sending and starting conversations until it is lifted.
+  // Recorded against the member, from the report it was taken on.
+  'RESTRICT_MESSAGING',
+  'LIFT_MESSAGING_RESTRICTION',
 ] as const;
 export type ModerationActionKind = (typeof MODERATION_ACTION_KINDS)[number];
 
@@ -159,6 +171,46 @@ export interface ReportSubjectPreview {
   isWithheld: boolean;
   /** A `HIDE_SUBJECT` is currently in force. */
   isHidden: boolean;
+  /**
+   * MSG-09, for a `MEMBER` or `MESSAGE` report: whether the member (for a
+   * message, its author) has their messaging restricted. Null for the other
+   * kinds and when the account is gone.
+   */
+  messagingRestricted: boolean | null;
+  /**
+   * MSG-09, for a `MESSAGE` report: the capture is still readable, but the
+   * message itself was deleted or its conversation removed, so there is
+   * nothing left to hide or restore.
+   */
+  messageGone: boolean;
+}
+
+/** One message of a report's capture, as the reporter could see it. */
+export interface CapturedMessage {
+  /** The message's id; the message itself may since have been deleted. */
+  id: string;
+  /** Written by the reporter, else by the reported member. */
+  fromReporter: boolean;
+  /** Null when it was already deleted or removed when the report was made. */
+  body: string | null;
+  deleted: boolean;
+  /** The message the report is about; always the last one. */
+  isReported: boolean;
+  createdAt: IsoDateString;
+}
+
+/**
+ * MSG-09: the reported message and up to `MESSAGE_REPORT_CONTEXT_BEFORE`
+ * before it, oldest first, captured when the report was made. It outlives the
+ * author deleting the message, so deleting cannot erase the evidence, and it
+ * goes with the author's account. Reading it is recorded as a `VIEW_SUBJECT`,
+ * and nothing else of the conversation is ever readable.
+ */
+export interface ReportedMessageContext {
+  /** The member who wrote the reported message. */
+  author: UserSearchResponse;
+  messages: CapturedMessage[];
+  capturedAt: IsoDateString;
 }
 
 /** One row of the queue. */
@@ -222,7 +274,8 @@ export interface ModerationHistoryResponse {
 }
 
 /**
- * POST /moderation/reports/:id/dismiss, /hide and /restore. The note is the
+ * POST /moderation/reports/:id/dismiss, /hide, /restore and (MSG-09)
+ * /restrict-messaging and /lift-messaging-restriction. The note is the
  * reviewer's own record of why; it is never shown to the reporter or to the
  * subject's owner, because neither is promised an explanation.
  */
@@ -234,4 +287,9 @@ export interface ReviewReportRequest {
 export interface ReviewReportResponse {
   report: ModerationReport;
   action: ModerationActionRecord;
+  /**
+   * MSG-09: present only on the view of a `MESSAGE` report, which is the one
+   * way to read its capture, so the read and its record are one request.
+   */
+  messageContext?: ReportedMessageContext;
 }

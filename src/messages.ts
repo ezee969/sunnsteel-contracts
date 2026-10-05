@@ -8,6 +8,11 @@ import type { IsoDateString } from "./shared";
 // lasts, a member hidden by moderation can be messaged by no one and messages
 // no one, and who may *start* a conversation is the recipient's setting. An
 // existing conversation keeps working whatever the setting says later.
+//
+// MSG-09 adds the safety controls: a participant reports a message, which
+// captures it and the few before it for a moderator; a moderator can hide one
+// message from the other participant and restrict an account's messaging,
+// which stops it sending and starting conversations until lifted.
 
 /**
  * Who may start a conversation with a member. `FOLLOWED`: members they follow.
@@ -56,9 +61,18 @@ export interface ConversationMember {
 export interface ConversationMessage {
   id: string;
   sentByMe: boolean;
-  /** Null once its author deleted it; the place stays as "Message deleted". */
+  /**
+   * Null once its author deleted it; the place stays as "Message deleted".
+   * Also null for the other participant while moderation hides it (MSG-09).
+   */
   body: string | null;
   deleted: boolean;
+  /**
+   * MSG-09: a moderator hid this message from the other participant. They read
+   * "Removed by moderation" in its place; its author still reads the text and
+   * is told it is hidden.
+   */
+  hiddenByModeration: boolean;
   createdAt: IsoDateString;
 }
 
@@ -71,16 +85,30 @@ export interface ConversationSummary {
   lastMessageAt: IsoDateString | null;
   /**
    * Whether the viewer may write in it now. False when the other member's
-   * account is gone, or the viewer's own messaging is unavailable.
+   * account is gone, or the viewer's own messaging is unavailable or
+   * restricted.
    */
   canSend: boolean;
+  /**
+   * MSG-09: a moderator restricted the viewer's messaging, which is why they
+   * cannot write. Only ever about the viewer: nobody else is told.
+   */
+  messagingRestricted: boolean;
 }
 
 /** GET /conversations, newest activity first. */
 export interface ConversationsResponse {
   conversations: ConversationSummary[];
   nextCursor: string | null;
+  /** MSG-09: the viewer's own messaging is restricted by moderation. */
+  messagingRestricted: boolean;
 }
+
+/**
+ * MSG-09: a report of a message captures it and at most this many messages
+ * before it in its conversation, as the reporter could see them then.
+ */
+export const MESSAGE_REPORT_CONTEXT_BEFORE = 5;
 
 /** GET /conversations/:id/messages, newest first; `cursor` pages older. */
 export interface ConversationMessagesResponse {

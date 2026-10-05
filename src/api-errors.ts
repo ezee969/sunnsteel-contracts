@@ -234,6 +234,12 @@ export const API_ERROR_MESSAGES = {
   MESSAGE_NOT_ADMITTED: "This member is not taking messages from you.",
   CONVERSATION_CLOSED: "This conversation can no longer receive messages.",
   MESSAGING_UNAVAILABLE: "Messaging is not available for this account.",
+  // ── Message moderation (MSG-09) ────────────────────────────────────────
+  MESSAGING_RESTRICTED:
+    "Moderation has restricted your messaging. You can still read and delete messages.",
+  REPORT_OWN_MESSAGE: "You cannot report your own message",
+  MESSAGING_ALREADY_RESTRICTED: "This member's messaging is already restricted",
+  MESSAGING_NOT_RESTRICTED: "This member's messaging is not restricted",
 
   // ── Account and settings ───────────────────────────────────────────────
   ACCOUNT_CONFLICT: "Account conflict for this email",
