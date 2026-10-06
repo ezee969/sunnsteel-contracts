@@ -13,6 +13,9 @@ import type { IsoDateString } from "./shared";
 // captures it and the few before it for a moderator; a moderator can hide one
 // message from the other participant and restrict an account's messaging,
 // which stops it sending and starting conversations until lifted.
+//
+// MSG-03 adds unread state: a read position per participant, for that reader
+// only. Whether a message was read is never shown to its sender.
 
 /**
  * Who may start a conversation with a member. `FOLLOWED`: members they follow.
@@ -94,6 +97,18 @@ export interface ConversationSummary {
    * cannot write. Only ever about the viewer: nobody else is told.
    */
   messagingRestricted: boolean;
+  /**
+   * MSG-03: the other member wrote something the viewer has not seen -- a
+   * message after the viewer's read position that is neither deleted nor
+   * removed for them. The viewer's own messages never count.
+   */
+  unread: boolean;
+  /**
+   * MSG-03: the viewer's read position, where "new since you last looked"
+   * starts. Null when they have never read the conversation. It is the
+   * viewer's alone: no read receipts, so a sender never learns it.
+   */
+  lastReadAt: IsoDateString | null;
 }
 
 /** GET /conversations, newest activity first. */
@@ -109,6 +124,21 @@ export interface ConversationsResponse {
  * before it in its conversation, as the reporter could see them then.
  */
 export const MESSAGE_REPORT_CONTEXT_BEFORE = 5;
+
+/**
+ * MSG-03: POST /conversations/:id/read. Moves the viewer's read position to
+ * the message they have seen (`through`, the newest one on their screen),
+ * never backwards, so a message that arrived after it stays unread.
+ */
+export interface MarkConversationReadRequest {
+  through: string;
+}
+
+/** MSG-03: GET /conversations/unread, for the navigation's count. */
+export interface UnreadConversationsResponse {
+  /** Conversations with something new, not messages (owner, 2026-10-06). */
+  unreadConversations: number;
+}
 
 /** GET /conversations/:id/messages, newest first; `cursor` pages older. */
 export interface ConversationMessagesResponse {
