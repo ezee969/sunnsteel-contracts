@@ -19,9 +19,10 @@ import type { IsoDateString } from "./shared";
 
 /**
  * Who may start a conversation with a member. `FOLLOWED`: members they follow.
- * `MSG-02` adds `EVERYONE` (as requests).
+ * `EVERYONE` (MSG-02): members they follow reach the inbox, anyone else lands
+ * in Requests. `NOBODY`: no one may start a new one.
  */
-export const MESSAGE_PERMISSIONS = ["FOLLOWED", "NOBODY"] as const;
+export const MESSAGE_PERMISSIONS = ["FOLLOWED", "EVERYONE", "NOBODY"] as const;
 export type MessagePermission = (typeof MESSAGE_PERMISSIONS)[number];
 export const DEFAULT_MESSAGE_PERMISSION: MessagePermission = "FOLLOWED";
 
@@ -79,6 +80,15 @@ export interface ConversationMessage {
   createdAt: IsoDateString;
 }
 
+/**
+ * MSG-02: a conversation that is still a request. `INCOMING`: the viewer may
+ * accept, decline or block. `OUTGOING`: the viewer sent it and waits -- told
+ * neither whether it was seen nor whether it was declined.
+ */
+export interface ConversationRequest {
+  direction: "INCOMING" | "OUTGOING";
+}
+
 export interface ConversationSummary {
   id: string;
   /** Null when the other member deleted their account ("Deleted member"). */
@@ -109,7 +119,22 @@ export interface ConversationSummary {
    * viewer's alone: no read receipts, so a sender never learns it.
    */
   lastReadAt: IsoDateString | null;
+  /** MSG-02: null once accepted, or for a conversation that never was a request. */
+  request: ConversationRequest | null;
 }
+
+/**
+ * MSG-02: GET /conversations?box=. The inbox holds accepted conversations
+ * and the viewer's own requests; Requests holds the ones waiting for them.
+ */
+export const CONVERSATION_BOXES = ["INBOX", "REQUESTS"] as const;
+export type ConversationBox = (typeof CONVERSATION_BOXES)[number];
+
+/**
+ * MSG-02: after a decline, the same member's new request is refused for this
+ * many days, unless the recipient follows them or writes first.
+ */
+export const MESSAGE_REQUEST_DECLINE_COOLDOWN_DAYS = 30;
 
 /** GET /conversations, newest activity first. */
 export interface ConversationsResponse {
@@ -138,6 +163,11 @@ export interface MarkConversationReadRequest {
 export interface UnreadConversationsResponse {
   /** Conversations with something new, not messages (owner, 2026-10-06). */
   unreadConversations: number;
+  /**
+   * MSG-02: requests waiting for the viewer. For the Requests tab only: they
+   * never count in the navigation (owner, 2026-10-06).
+   */
+  requests: number;
 }
 
 /** GET /conversations/:id/messages, newest first; `cursor` pages older. */
@@ -180,6 +210,8 @@ export interface UpdateMessagePermissionRequest {
 export interface MemberMessagingState {
   canStart: boolean;
   conversationId: string | null;
+  /** MSG-02: a first message would land in their Requests. */
+  asRequest: boolean;
 }
 
 export function isMessagePermission(value: unknown): value is MessagePermission {

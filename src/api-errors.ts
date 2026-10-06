@@ -240,6 +240,8 @@ export const API_ERROR_MESSAGES = {
   REPORT_OWN_MESSAGE: "You cannot report your own message",
   MESSAGING_ALREADY_RESTRICTED: "This member's messaging is already restricted",
   MESSAGING_NOT_RESTRICTED: "This member's messaging is not restricted",
+  // ── Message requests (MSG-02) ──────────────────────────────────────────
+  REQUEST_PENDING: "You can send more once they accept your request.",
 
   // ── Account and settings ───────────────────────────────────────────────
   ACCOUNT_CONFLICT: "Account conflict for this email",
