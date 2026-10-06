@@ -136,6 +136,12 @@ export type ConversationBox = (typeof CONVERSATION_BOXES)[number];
  */
 export const MESSAGE_REQUEST_DECLINE_COOLDOWN_DAYS = 30;
 
+/**
+ * MSG-08: a message push waits this long and is dropped if the conversation
+ * was read meanwhile, so two members talking live do not buzz each other.
+ */
+export const MESSAGE_PUSH_DELAY_SECONDS = 30;
+
 /** GET /conversations, newest activity first. */
 export interface ConversationsResponse {
   conversations: ConversationSummary[];

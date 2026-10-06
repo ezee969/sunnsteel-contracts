@@ -18,6 +18,8 @@ export const NOTIFICATION_CATEGORIES = [
   'STREAK_AT_RISK',
   'TRAINING_PARTNER_SESSION',
   'TRAINING_PARTNER_ACHIEVEMENT',
+  // MSG-08. On by default, like the training categories.
+  'MESSAGE',
 ] as const;
 export type NotificationCategory = (typeof NOTIFICATION_CATEGORIES)[number];
 

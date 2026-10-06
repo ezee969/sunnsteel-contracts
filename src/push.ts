@@ -74,6 +74,7 @@ export const PUSH_PAYLOAD_KINDS = [
   'STREAK_AT_RISK',
   'TRAINING_PARTNER_SESSION',
   'TRAINING_PARTNER_ACHIEVEMENT',
+  'MESSAGE',
 ] as const;
 export type PushPayloadKind = (typeof PUSH_PAYLOAD_KINDS)[number];
 
@@ -132,12 +133,27 @@ export interface TrainingPartnerAchievementPushPayload {
   tag: string;
 }
 
+/**
+ * MSG-08. Names the sender only ("Ana sent you a message"); the text stays in
+ * the app (the owner's decision 9), and a request never pushes. One per
+ * conversation until it is read, collapsed by `tag`.
+ */
+export interface MessagePushPayload {
+  kind: 'MESSAGE';
+  title: string;
+  body: string;
+  url: string;
+  tag: string;
+  conversationId: string;
+}
+
 export type PushPayload =
   | RestAlertPushPayload
   | TrainingReminderPushPayload
   | StreakAtRiskPushPayload
   | TrainingPartnerSessionPushPayload
-  | TrainingPartnerAchievementPushPayload;
+  | TrainingPartnerAchievementPushPayload
+  | MessagePushPayload;
 
 /** A rest alert is refused beyond this far ahead. */
 export const REST_ALERT_MAX_LEAD_SECONDS = 3600;
