@@ -206,6 +206,11 @@ export interface CapturedMessage {
    * empty when it was no longer available, or null when it carried none.
    */
   workoutName?: string | null;
+  /**
+   * MSG-11: the record it carried, by its lift, empty when it was no longer
+   * available, or null when it carried none.
+   */
+  recordName?: string | null;
   createdAt: IsoDateString;
 }
 

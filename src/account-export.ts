@@ -201,6 +201,8 @@ export interface AccountExportV1 {
       routineId?: string;
       /** MSG-10: the member's own workout the message shared, by id. */
       sessionId?: string;
+      /** MSG-11: the member's own record the message shared, by its event. */
+      recordEventId?: string;
       createdAt: IsoDateString;
     }>;
     reportsFiled: Array<{

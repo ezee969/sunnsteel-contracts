@@ -229,7 +229,8 @@ export const API_ERROR_MESSAGES = {
   MESSAGE_SELF: "You cannot message yourself",
   MESSAGE_LENGTH:
     "A message must not be empty and may be at most {max} characters.",
-  MESSAGE_ONE_ATTACHMENT: "A message can carry one routine or one workout.",
+  MESSAGE_ONE_ATTACHMENT:
+    "A message can carry one routine, one workout or one record.",
   MESSAGES_PER_MINUTE: "You can send at most {max} messages a minute.",
   CONVERSATIONS_PER_DAY: "You can start at most {max} new conversations a day.",
   MESSAGE_NOT_ADMITTED: "This member is not taking messages from you.",
