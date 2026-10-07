@@ -55,9 +55,10 @@ export interface SharedRoutineOwner {
 /**
  * How a reader reached a routine. A link is the owner's explicit consent for
  * that one routine and ignores visibility; a visibility read is governed by
- * both the routine's own rule and the account's.
+ * both the routine's own rule and the account's. A message (MSG-07) is the
+ * sender's consent to its other participant, until it is deleted.
  */
-export const SHARED_ROUTINE_SOURCES = ['LINK', 'VISIBILITY'] as const;
+export const SHARED_ROUTINE_SOURCES = ['LINK', 'VISIBILITY', 'MESSAGE'] as const;
 export type SharedRoutineSource = (typeof SHARED_ROUTINE_SOURCES)[number];
 
 /**
@@ -129,6 +130,8 @@ export interface CloneRoutineRequest {
   token?: string;
   /** A routine the viewer may read under `ROUT-04` visibility. */
   routineId?: string;
+  /** MSG-07: a message that shared the routine with the viewer. */
+  messageId?: string;
 }
 
 /** The refusals a clone states by name rather than as a bare 4xx. */

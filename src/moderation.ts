@@ -196,6 +196,11 @@ export interface CapturedMessage {
   deleted: boolean;
   /** The message the report is about; always the last one. */
   isReported: boolean;
+  /**
+   * MSG-07: the routine it carried, by the name the reporter saw, or null when
+   * it carried none. Its name and nothing of the routine itself.
+   */
+  routineName?: string | null;
   createdAt: IsoDateString;
 }
 

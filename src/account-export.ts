@@ -195,7 +195,10 @@ export interface AccountExportV1 {
     messagesSent?: Array<{
       to: AccountExportMember | null;
       conversationId: string;
+      /** Empty when a routine was sent without a note (MSG-07). */
       body: string;
+      /** MSG-07: the member's own routine the message shared, by id. */
+      routineId?: string;
       createdAt: IsoDateString;
     }>;
     reportsFiled: Array<{

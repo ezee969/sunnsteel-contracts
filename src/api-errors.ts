@@ -73,7 +73,7 @@ export const API_ERROR_MESSAGES = {
     "Finish the active session before changing the routine structure",
   ROUTINE_SHARE_LINKS_MAX: "A routine keeps at most {max} active links.",
   CLONE_SOURCE_REQUIRED:
-    "SOURCE_REQUIRED: send either a share token or a routine id",
+    "SOURCE_REQUIRED: send one of a share token, a routine id or a message id",
   CLONE_UNKNOWN_EXERCISE:
     "UNKNOWN_EXERCISE: an exercise in this routine is no longer in the catalog",
   ROUTINE_VERSIONS_MAX: "A routine keeps at most {max} versions; delete one first",

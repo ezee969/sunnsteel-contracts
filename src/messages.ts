@@ -1,3 +1,4 @@
+import type { SharedRoutineSummary } from "./routine-sharing";
 import type { IsoDateString } from "./shared";
 
 // Direct messages (MSG-01) -----------------------------------------------------
@@ -16,6 +17,11 @@ import type { IsoDateString } from "./shared";
 //
 // MSG-03 adds unread state: a read position per participant, for that reader
 // only. Whether a message was read is never shown to its sender.
+//
+// MSG-07 lets a message carry one of the sender's routines. Sending it is the
+// sender's consent: the other participant may open and clone that routine
+// whatever its visibility, until the message is deleted. The card is resolved
+// when it is read, never copied into the message.
 
 /**
  * Who may start a conversation with a member. `FOLLOWED`: members they follow.
@@ -54,6 +60,40 @@ export function normalizeMessageBody(body: string): string | null {
   return text;
 }
 
+/**
+ * MSG-07: what a message, its text left empty or not, may carry. A routine
+ * travels with an optional note.
+ */
+export const MESSAGE_ATTACHMENT_KINDS = ["ROUTINE"] as const;
+export type MessageAttachmentKind = (typeof MESSAGE_ATTACHMENT_KINDS)[number];
+
+/**
+ * MSG-07: a routine in a message, as it is now. `routine` is null once it is
+ * no longer available -- deleted, or hidden by moderation -- and the card
+ * says so rather than showing what it once was.
+ */
+export interface MessageRoutineAttachment {
+  kind: "ROUTINE";
+  routine: SharedRoutineSummary | null;
+}
+
+export type MessageAttachment = MessageRoutineAttachment;
+
+/**
+ * MSG-07: the stored text of a message. A message with a routine may leave it
+ * empty (null); one without must say something. Undefined when the text is
+ * refused: empty with nothing attached, or too long.
+ */
+export function messageNote(
+  body: string | undefined | null,
+  hasAttachment: boolean,
+): string | null | undefined {
+  if ((body ?? "").trim().length === 0) {
+    return hasAttachment ? null : undefined;
+  }
+  return normalizeMessageBody(body ?? "") ?? undefined;
+}
+
 /** The other participant, or null once their account was deleted. */
 export interface ConversationMember {
   id: string;
@@ -67,7 +107,8 @@ export interface ConversationMessage {
   sentByMe: boolean;
   /**
    * Null once its author deleted it; the place stays as "Message deleted".
-   * Also null for the other participant while moderation hides it (MSG-09).
+   * Also null for the other participant while moderation hides it (MSG-09),
+   * and for a routine sent without a note (MSG-07).
    */
   body: string | null;
   deleted: boolean;
@@ -77,6 +118,12 @@ export interface ConversationMessage {
    * is told it is hidden.
    */
   hiddenByModeration: boolean;
+  /**
+   * MSG-07: a routine it carries, resolved as it is now. Null when it carries
+   * none, and whenever the text is withheld (deleted, or hidden from the
+   * viewer by moderation).
+   */
+  attachment: MessageAttachment | null;
   createdAt: IsoDateString;
 }
 
@@ -190,12 +237,18 @@ export interface ConversationMessagesResponse {
  */
 export interface StartConversationRequest {
   recipient: string;
-  body: string;
+  /** Optional when the message carries a routine (MSG-07). */
+  body?: string;
+  /** MSG-07: one of the sender's own routines. */
+  routineId?: string;
 }
 
 /** POST /conversations/:id/messages. */
 export interface SendMessageRequest {
-  body: string;
+  /** Optional when the message carries a routine (MSG-07). */
+  body?: string;
+  /** MSG-07: one of the sender's own routines. */
+  routineId?: string;
 }
 
 export interface SendMessageResponse {
