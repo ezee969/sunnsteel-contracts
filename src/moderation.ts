@@ -201,6 +201,11 @@ export interface CapturedMessage {
    * it carried none. Its name and nothing of the routine itself.
    */
   routineName?: string | null;
+  /**
+   * MSG-10: the workout it carried, by the routine and day the reporter saw,
+   * empty when it was no longer available, or null when it carried none.
+   */
+  workoutName?: string | null;
   createdAt: IsoDateString;
 }
 

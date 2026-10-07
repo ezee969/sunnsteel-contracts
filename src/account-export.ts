@@ -199,6 +199,8 @@ export interface AccountExportV1 {
       body: string;
       /** MSG-07: the member's own routine the message shared, by id. */
       routineId?: string;
+      /** MSG-10: the member's own workout the message shared, by id. */
+      sessionId?: string;
       createdAt: IsoDateString;
     }>;
     reportsFiled: Array<{

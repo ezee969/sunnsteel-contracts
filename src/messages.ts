@@ -1,5 +1,7 @@
 import type { SharedRoutineSummary } from "./routine-sharing";
-import type { IsoDateString } from "./shared";
+import type { SetKind } from "./set-kinds";
+import type { IsoDateString, WeightUnit } from "./shared";
+import type { SessionRecapRecord, SharedSessionOwner } from "./workout";
 
 // Direct messages (MSG-01) -----------------------------------------------------
 //
@@ -22,6 +24,9 @@ import type { IsoDateString } from "./shared";
 // sender's consent: the other participant may open and clone that routine
 // whatever its visibility, until the message is deleted. The card is resolved
 // when it is read, never copied into the message.
+//
+// MSG-10 adds a finished workout the same way: sending it is the sender's
+// consent, whatever their profile privacy, until the message is deleted.
 
 /**
  * Who may start a conversation with a member. `FOLLOWED`: members they follow.
@@ -61,10 +66,10 @@ export function normalizeMessageBody(body: string): string | null {
 }
 
 /**
- * MSG-07: what a message, its text left empty or not, may carry. A routine
- * travels with an optional note.
+ * MSG-07: what a message, its text left empty or not, may carry -- one of
+ * them, with an optional note. MSG-10 adds a finished workout.
  */
-export const MESSAGE_ATTACHMENT_KINDS = ["ROUTINE"] as const;
+export const MESSAGE_ATTACHMENT_KINDS = ["ROUTINE", "WORKOUT"] as const;
 export type MessageAttachmentKind = (typeof MESSAGE_ATTACHMENT_KINDS)[number];
 
 /**
@@ -77,7 +82,60 @@ export interface MessageRoutineAttachment {
   routine: SharedRoutineSummary | null;
 }
 
-export type MessageAttachment = MessageRoutineAttachment;
+/**
+ * MSG-10: a finished workout in a card -- what was trained and its totals,
+ * as the workout is now (a correction shows). Never its notes, RPE or the
+ * comparison with the session before.
+ */
+export interface MessageWorkoutSummary {
+  sessionId: string;
+  routineName: string;
+  dayName: string | null;
+  endedAt: IsoDateString;
+  durationSec: number;
+  totalVolumeKg: number;
+  completedSets: number;
+}
+
+/** MSG-10: `workout` is null once it is no longer available (deleted). */
+export interface MessageWorkoutAttachment {
+  kind: "WORKOUT";
+  workout: MessageWorkoutSummary | null;
+}
+
+export type MessageAttachment =
+  | MessageRoutineAttachment
+  | MessageWorkoutAttachment;
+
+/** MSG-10: one completed set of a shared workout. Never its RPE. */
+export interface SharedWorkoutSet {
+  setNumber: number;
+  kind: SetKind;
+  /** Canonical kilograms; null for a set logged without a load. */
+  weightKg: number | null;
+  reps: number | null;
+}
+
+export interface SharedWorkoutExercise {
+  exerciseId: string;
+  /** The exercise as it was performed (a swapped slot by its substitute). */
+  name: string;
+  sets: SharedWorkoutSet[];
+}
+
+/**
+ * MSG-10: GET /conversations/:id/messages/:messageId/workout. The workout a
+ * message shared, opened: the summary, the records it set and each
+ * exercise's completed sets, in the order they were trained. Nothing else of
+ * the session -- no notes, no RPE, no previous-session comparison.
+ */
+export interface SharedWorkout extends MessageWorkoutSummary {
+  owner: SharedSessionOwner;
+  /** The owner's unit; a reader shows weights in their own. */
+  weightUnit: WeightUnit;
+  records: SessionRecapRecord[];
+  exercises: SharedWorkoutExercise[];
+}
 
 /**
  * MSG-07: the stored text of a message. A message with a routine may leave it
@@ -237,18 +295,22 @@ export interface ConversationMessagesResponse {
  */
 export interface StartConversationRequest {
   recipient: string;
-  /** Optional when the message carries a routine (MSG-07). */
+  /** Optional when the message carries a routine or a workout. */
   body?: string;
   /** MSG-07: one of the sender's own routines. */
   routineId?: string;
+  /** MSG-10: one of the sender's own finished workouts. Not with a routine. */
+  sessionId?: string;
 }
 
 /** POST /conversations/:id/messages. */
 export interface SendMessageRequest {
-  /** Optional when the message carries a routine (MSG-07). */
+  /** Optional when the message carries a routine or a workout. */
   body?: string;
   /** MSG-07: one of the sender's own routines. */
   routineId?: string;
+  /** MSG-10: one of the sender's own finished workouts. Not with a routine. */
+  sessionId?: string;
 }
 
 export interface SendMessageResponse {
