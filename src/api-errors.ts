@@ -162,6 +162,18 @@ export const API_ERROR_MESSAGES = {
   LINEAR_BLOCK_NOT_FINISHED:
     "This exercise's block has not finished, so there is nothing to choose yet",
 
+  // ── Workouts logged later (LIVE-23) ───────────────────────────────────
+  LOGGED_WORKOUT_DATE:
+    "A past workout can be logged only before the routine was created, within the last {days} days",
+  LOGGED_WORKOUT_OVERLAP: "Another workout overlaps that time",
+  LOGGED_WORKOUT_SAME_DAY: "This day of the routine is already logged on that date",
+  LOGGED_WORKOUT_LIMIT: "A routine can hold at most {max} logged workouts",
+  LOGGED_WORKOUT_NO_SETS: "Log at least one completed set",
+  LOGGED_WORKOUT_SET_NOT_IN_DAY: "Every set must belong to an exercise of this day",
+  LOGGED_WORKOUT_DAY_NOT_BASELINE:
+    "Only the routine's own days can be logged, not a training block's or a deload's",
+  LOGGED_WORKOUT_NOT_LOGGED: "Only a workout logged later can be removed",
+
   // ── Corrections (LIVE-17) ──────────────────────────────────────────────
   CORRECTION_NOT_COMPLETED: "Only a completed workout can be corrected",
   CORRECTION_NOT_LATEST: "Only your most recent workout can be corrected",
@@ -171,6 +183,8 @@ export const API_ERROR_MESSAGES = {
     "This workout can no longer be corrected: the correction window has passed",
   CORRECTION_LIMIT_REACHED:
     "This workout has been corrected as many times as allowed",
+  CORRECTION_LOGGED_LATER:
+    "A workout logged later is changed by removing it and logging it again",
   CORRECTION_WEIGHT_RANGE: "Weight must be between 0 and {max} kg",
   CORRECTION_REPS_RANGE: "Reps must be a whole number between 0 and {max}",
   CORRECTION_RPE_RANGE: "RPE must be between {min} and {max}",

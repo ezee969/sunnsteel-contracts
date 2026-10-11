@@ -1,3 +1,4 @@
+import type { WorkoutSessionOrigin } from './logged-workouts';
 import type { SetKind } from './set-kinds';
 import type { LinearPeriodizationState } from './linear-periodization';
 import type { SessionTemporaryOverride } from './deloads';
@@ -67,6 +68,11 @@ export interface WorkoutSession {
    * never advances progression.
    */
   temporaryOverride?: SessionTemporaryOverride | null;
+  /**
+   * LIVE-23: LOGGED_LATER for a workout recorded after it happened; absent
+   * or LIVE for one trained in the app.
+   */
+  origin?: WorkoutSessionOrigin;
   routine?: {
     id: string;
     name: string;
@@ -442,6 +448,8 @@ export interface WorkoutSessionSummary {
   totalSets?: number | null;
   totalExercises?: number | null;
   notes?: string | null;
+  /** LIVE-23: LOGGED_LATER for a workout recorded after it happened. */
+  origin?: WorkoutSessionOrigin;
   routine: {
     id: string;
     name: string;

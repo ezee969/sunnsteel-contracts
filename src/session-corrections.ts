@@ -61,7 +61,9 @@ export type SessionCorrectionClosedReason =
   | "NOT_LATEST"
   | "LATER_SESSION"
   | "WINDOW_PASSED"
-  | "LIMIT_REACHED";
+  | "LIMIT_REACHED"
+  /** LIVE-23: a workout logged later is removed and logged again instead. */
+  | "LOGGED_LATER";
 
 /**
  * Whether the workout can be corrected now. `correctableUntil` is set only
@@ -120,6 +122,8 @@ export function sessionCorrectionWindow(
     isLatest: boolean;
     laterSessionStarted: boolean;
     correctionCount: number;
+    /** LIVE-23: the workout was logged after it happened. */
+    loggedLater?: boolean;
   },
   now: Date = new Date(),
 ): SessionCorrectionWindow {
@@ -128,6 +132,7 @@ export function sessionCorrectionWindow(
   ): SessionCorrectionWindow => ({ correctableUntil: null, closedReason });
   if (input.status !== "COMPLETED" || !input.endedAt)
     return closed("NOT_COMPLETED");
+  if (input.loggedLater) return closed("LOGGED_LATER");
   if (!input.isLatest) return closed("NOT_LATEST");
   if (input.laterSessionStarted) return closed("LATER_SESSION");
   const until = new Date(

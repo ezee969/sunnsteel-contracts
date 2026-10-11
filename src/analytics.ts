@@ -331,7 +331,8 @@ export interface WorkoutSessionSnapshotV1 {
   sourceRoutineId: string;
   sourceRoutineDayId: string;
   capturedAt: string;
-  provenance: 'CAPTURED' | 'APPROXIMATED';
+  /** LOGGED (LIVE-23): reconstructed when a past workout was logged later. */
+  provenance: 'CAPTURED' | 'APPROXIMATED' | 'LOGGED';
   notes: string | null;
   routine: NonNullable<WorkoutSession['routine']>;
   routineDay: NonNullable<WorkoutSession['routineDay']>;
