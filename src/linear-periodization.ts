@@ -134,17 +134,49 @@ export interface LinearPeriodizationState {
   nextReferenceMaxKg?: number | null;
 }
 
-/** A new block from step 1. */
+/** The nearest step of a block: whole, 1-8. */
+const clampStep = (step: number) =>
+  Math.min(Math.max(Math.trunc(step) || 1, 1), LP_BLOCK_STEPS);
+
+/**
+ * A new block, from step 1 unless the member is already part of the way
+ * through it (ROUT-20): the earlier steps are never treated as done.
+ */
 export function startLinearPeriodization(
   referenceMaxKg: number,
   cycle = 1,
+  step = 1,
 ): LinearPeriodizationState {
   return {
     referenceMaxKg,
     phase: 'BLOCK',
-    step: 1,
+    step: clampStep(step),
     cycle,
     samples: [],
+    finishedAt: null,
+    estimatedMaxKg: null,
+    nextReferenceMaxKg: null,
+  };
+}
+
+/**
+ * The same block at another step (ROUT-20): what a member sets when they
+ * already trained part of it outside the app, or got the week wrong. The
+ * reference max and block number stay; samples from that step on are
+ * dropped, so the estimate only ever reads sets done at steps 7-8 before
+ * the slot gets there again. A finished block or its recovery step becomes
+ * a running block at that step.
+ */
+export function lpAtStep(
+  state: LinearPeriodizationState,
+  step: number,
+): LinearPeriodizationState {
+  const at = clampStep(step);
+  return {
+    ...state,
+    phase: 'BLOCK',
+    step: at,
+    samples: state.samples.filter((sample) => sample.step < at),
     finishedAt: null,
     estimatedMaxKg: null,
     nextReferenceMaxKg: null,
