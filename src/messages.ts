@@ -1,4 +1,4 @@
-import type { EarnedAchievement } from "./achievements";
+import type { ComebackRecognition, EarnedAchievement } from "./achievements";
 import type { SharedRoutineSummary } from "./routine-sharing";
 import type { SetKind } from "./set-kinds";
 import type { IsoDateString, WeightUnit } from "./shared";
@@ -33,7 +33,8 @@ import type { SessionRecapRecord, SharedSessionOwner } from "./workout";
 // MSG-10 adds a finished workout the same way: sending it is the sender's
 // consent, whatever their profile privacy, until the message is deleted.
 // MSG-11 adds a personal record: that record as set, in its card.
-// MSG-12 adds an earned milestone, as the sender holds it now.
+// MSG-12 adds an earned milestone, as the sender holds it now, and MSG-13 a
+// comeback the same way.
 
 /**
  * Who may start a conversation with a member. `FOLLOWED`: members they follow.
@@ -81,6 +82,7 @@ export const MESSAGE_ATTACHMENT_KINDS = [
   "WORKOUT",
   "RECORD",
   "ACHIEVEMENT",
+  "COMEBACK",
 ] as const;
 export type MessageAttachmentKind = (typeof MESSAGE_ATTACHMENT_KINDS)[number];
 
@@ -159,11 +161,25 @@ export interface MessageAchievementAttachment {
   achievement: MessageAchievementSummary | null;
 }
 
+/**
+ * MSG-13: a comeback in a card -- as its sender holds it now, by its stable
+ * recognition id: the days away, the active days in the window and when it
+ * was recognized. Nothing of the sessions behind it.
+ */
+export type MessageComebackSummary = Omit<ComebackRecognition, "sourceSessionId">;
+
+/** MSG-13: `comeback` is null once its sender no longer holds it. */
+export interface MessageComebackAttachment {
+  kind: "COMEBACK";
+  comeback: MessageComebackSummary | null;
+}
+
 export type MessageAttachment =
   | MessageRoutineAttachment
   | MessageWorkoutAttachment
   | MessageRecordAttachment
-  | MessageAchievementAttachment;
+  | MessageAchievementAttachment
+  | MessageComebackAttachment;
 
 /** MSG-10: one completed set of a shared workout. Never its RPE. */
 export interface SharedWorkoutSet {
@@ -363,6 +379,8 @@ export interface StartConversationRequest {
   recordEventId?: string;
   /** MSG-12: one of the sender's own earned milestones, by its id. */
   achievementId?: string;
+  /** MSG-13: one of the sender's own comebacks, by its recognition id. */
+  comebackId?: string;
 }
 
 /** POST /conversations/:id/messages. */
@@ -377,6 +395,8 @@ export interface SendMessageRequest {
   recordEventId?: string;
   /** MSG-12: one of the sender's own earned milestones, by its id. */
   achievementId?: string;
+  /** MSG-13: one of the sender's own comebacks, by its recognition id. */
+  comebackId?: string;
 }
 
 export interface SendMessageResponse {

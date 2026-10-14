@@ -205,6 +205,8 @@ export interface AccountExportV1 {
       recordEventId?: string;
       /** MSG-12: the member's own milestone the message shared, by its id. */
       achievementId?: string;
+      /** MSG-13: the member's own comeback the message shared, by its id. */
+      comebackId?: string;
       createdAt: IsoDateString;
     }>;
     reportsFiled: Array<{

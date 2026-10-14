@@ -216,6 +216,11 @@ export interface CapturedMessage {
    * it was no longer available, or null when it carried none.
    */
   achievementId?: string | null;
+  /**
+   * MSG-13: the comeback it carried, by its recognition id, empty when it was
+   * no longer available, or null when it carried none.
+   */
+  comebackId?: string | null;
   createdAt: IsoDateString;
 }
 
