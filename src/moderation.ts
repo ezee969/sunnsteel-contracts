@@ -211,6 +211,11 @@ export interface CapturedMessage {
    * available, or null when it carried none.
    */
   recordName?: string | null;
+  /**
+   * MSG-12: the milestone it carried, by its id (`sessions:10`), empty when
+   * it was no longer available, or null when it carried none.
+   */
+  achievementId?: string | null;
   createdAt: IsoDateString;
 }
 

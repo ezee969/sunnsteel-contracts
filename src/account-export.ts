@@ -203,6 +203,8 @@ export interface AccountExportV1 {
       sessionId?: string;
       /** MSG-11: the member's own record the message shared, by its event. */
       recordEventId?: string;
+      /** MSG-12: the member's own milestone the message shared, by its id. */
+      achievementId?: string;
       createdAt: IsoDateString;
     }>;
     reportsFiled: Array<{

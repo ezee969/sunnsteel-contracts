@@ -1,3 +1,4 @@
+import type { EarnedAchievement } from "./achievements";
 import type { SharedRoutineSummary } from "./routine-sharing";
 import type { SetKind } from "./set-kinds";
 import type { IsoDateString, WeightUnit } from "./shared";
@@ -32,6 +33,7 @@ import type { SessionRecapRecord, SharedSessionOwner } from "./workout";
 // MSG-10 adds a finished workout the same way: sending it is the sender's
 // consent, whatever their profile privacy, until the message is deleted.
 // MSG-11 adds a personal record: that record as set, in its card.
+// MSG-12 adds an earned milestone, as the sender holds it now.
 
 /**
  * Who may start a conversation with a member. `FOLLOWED`: members they follow.
@@ -74,7 +76,12 @@ export function normalizeMessageBody(body: string): string | null {
  * MSG-07: what a message, its text left empty or not, may carry -- one of
  * them, with an optional note. MSG-10 adds a finished workout.
  */
-export const MESSAGE_ATTACHMENT_KINDS = ["ROUTINE", "WORKOUT", "RECORD"] as const;
+export const MESSAGE_ATTACHMENT_KINDS = [
+  "ROUTINE",
+  "WORKOUT",
+  "RECORD",
+  "ACHIEVEMENT",
+] as const;
 export type MessageAttachmentKind = (typeof MESSAGE_ATTACHMENT_KINDS)[number];
 
 /**
@@ -130,10 +137,33 @@ export interface MessageRecordAttachment {
   record: MessageRecordSummary | null;
 }
 
+/**
+ * MSG-12: an earned milestone in a card -- as its sender holds it now, by its
+ * stable milestone id (`sessions:10`): what it is and when it was earned, or
+ * that it was recognized from history. Nothing of the session behind it.
+ */
+export type MessageAchievementSummary = Pick<
+  EarnedAchievement,
+  | "id"
+  | "category"
+  | "threshold"
+  | "title"
+  | "description"
+  | "unlockedAt"
+  | "backfilled"
+>;
+
+/** MSG-12: `achievement` is null once its sender no longer holds it. */
+export interface MessageAchievementAttachment {
+  kind: "ACHIEVEMENT";
+  achievement: MessageAchievementSummary | null;
+}
+
 export type MessageAttachment =
   | MessageRoutineAttachment
   | MessageWorkoutAttachment
-  | MessageRecordAttachment;
+  | MessageRecordAttachment
+  | MessageAchievementAttachment;
 
 /** MSG-10: one completed set of a shared workout. Never its RPE. */
 export interface SharedWorkoutSet {
@@ -331,6 +361,8 @@ export interface StartConversationRequest {
   sessionId?: string;
   /** MSG-11: one of the sender's own personal records, by its event. */
   recordEventId?: string;
+  /** MSG-12: one of the sender's own earned milestones, by its id. */
+  achievementId?: string;
 }
 
 /** POST /conversations/:id/messages. */
@@ -343,6 +375,8 @@ export interface SendMessageRequest {
   sessionId?: string;
   /** MSG-11: one of the sender's own personal records, by its event. */
   recordEventId?: string;
+  /** MSG-12: one of the sender's own earned milestones, by its id. */
+  achievementId?: string;
 }
 
 export interface SendMessageResponse {
