@@ -207,6 +207,8 @@ export interface AccountExportV1 {
       achievementId?: string;
       /** MSG-13: the member's own comeback the message shared, by its id. */
       comebackId?: string;
+      /** MSG-14: the month of the member's training the message shared. */
+      progressId?: string;
       createdAt: IsoDateString;
     }>;
     reportsFiled: Array<{

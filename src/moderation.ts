@@ -221,6 +221,11 @@ export interface CapturedMessage {
    * no longer available, or null when it carried none.
    */
   comebackId?: string | null;
+  /**
+   * MSG-14: the month of training it carried (`progress:YYYY-MM`), empty when
+   * it was no longer available, or null when it carried none.
+   */
+  progressId?: string | null;
   createdAt: IsoDateString;
 }
 

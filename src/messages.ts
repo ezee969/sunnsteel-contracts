@@ -34,7 +34,7 @@ import type { SessionRecapRecord, SharedSessionOwner } from "./workout";
 // consent, whatever their profile privacy, until the message is deleted.
 // MSG-11 adds a personal record: that record as set, in its card.
 // MSG-12 adds an earned milestone, as the sender holds it now, and MSG-13 a
-// comeback the same way.
+// comeback the same way. MSG-14 adds a month's progress.
 
 /**
  * Who may start a conversation with a member. `FOLLOWED`: members they follow.
@@ -83,6 +83,7 @@ export const MESSAGE_ATTACHMENT_KINDS = [
   "RECORD",
   "ACHIEVEMENT",
   "COMEBACK",
+  "PROGRESS",
 ] as const;
 export type MessageAttachmentKind = (typeof MESSAGE_ATTACHMENT_KINDS)[number];
 
@@ -174,12 +175,49 @@ export interface MessageComebackAttachment {
   comeback: MessageComebackSummary | null;
 }
 
+/**
+ * MSG-14: a month's progress is named `progress:YYYY-MM` -- one calendar
+ * month in the sender's time zone.
+ */
+export const MESSAGE_PROGRESS_ID = /^progress:(\d{4})-(0[1-9]|1[0-2])$/;
+
+export function messageProgressId(month: string): string {
+  return `progress:${month}`;
+}
+
+/**
+ * MSG-14: a month of training in a card -- as the sender's stored training
+ * reads now: how many workouts, on how many days, the completed sets, the
+ * volume and the personal records. Nothing of any single workout, routine or
+ * exercise, and no comparison.
+ */
+export interface MessageProgressSummary {
+  /** `progress:YYYY-MM`. */
+  id: string;
+  /** `YYYY-MM`. */
+  month: string;
+  /** False while the month is not over in the sender's time zone. */
+  complete: boolean;
+  workouts: number;
+  trainingDays: number;
+  completedSets: number;
+  volumeKg: number;
+  personalRecords: number;
+}
+
+/** MSG-14: `progress` is null while the sender's analytics are not ready. */
+export interface MessageProgressAttachment {
+  kind: "PROGRESS";
+  progress: MessageProgressSummary | null;
+}
+
 export type MessageAttachment =
   | MessageRoutineAttachment
   | MessageWorkoutAttachment
   | MessageRecordAttachment
   | MessageAchievementAttachment
-  | MessageComebackAttachment;
+  | MessageComebackAttachment
+  | MessageProgressAttachment;
 
 /** MSG-10: one completed set of a shared workout. Never its RPE. */
 export interface SharedWorkoutSet {
@@ -381,6 +419,8 @@ export interface StartConversationRequest {
   achievementId?: string;
   /** MSG-13: one of the sender's own comebacks, by its recognition id. */
   comebackId?: string;
+  /** MSG-14: one month of the sender's own training, `progress:YYYY-MM`. */
+  progressId?: string;
 }
 
 /** POST /conversations/:id/messages. */
@@ -397,6 +437,8 @@ export interface SendMessageRequest {
   achievementId?: string;
   /** MSG-13: one of the sender's own comebacks, by its recognition id. */
   comebackId?: string;
+  /** MSG-14: one month of the sender's own training, `progress:YYYY-MM`. */
+  progressId?: string;
 }
 
 export interface SendMessageResponse {
