@@ -49,11 +49,20 @@ export interface SessionSetCorrection {
   after: SetLogValues;
 }
 
+/** LIVE-24: the workout's end time, as it was and as it became. */
+export interface SessionEndTimeCorrection {
+  before: IsoDateString;
+  after: IsoDateString;
+}
+
 /** One saved correction. Never edited or deleted once written. */
 export interface SessionCorrection {
   id: string;
   createdAt: IsoDateString;
+  /** Empty when only the end time was corrected. */
   changes: SessionSetCorrection[];
+  /** LIVE-24: set when the correction moved the end time; absent before it. */
+  endedAt?: SessionEndTimeCorrection | null;
 }
 
 export type SessionCorrectionClosedReason =
@@ -92,6 +101,12 @@ export interface CorrectSessionSetRequest extends SetLogValues {
  */
 export interface CorrectSessionRequest {
   sets: CorrectSessionSetRequest[];
+  /**
+   * LIVE-24: when the workout ended, only ever earlier than recorded and never
+   * before its start or last set (`correctedEndTime`). Omitted, or equal to
+   * the recorded end, it is left as it is.
+   */
+  endedAt?: IsoDateString;
 }
 
 export interface CorrectSessionResponse {

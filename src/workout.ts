@@ -158,6 +158,11 @@ export type FinishStatus = Extract<WorkoutSessionStatus, 'COMPLETED' | 'ABORTED'
 export interface FinishWorkoutRequest {
   status: FinishStatus;
   notes?: string;
+  /**
+   * LIVE-24: when the workout ended; now when absent. Bounded by
+   * `earliestWorkoutEnd` and `finishEndTime`.
+   */
+  endedAt?: IsoDateString;
 }
 
 export type ProgressionRule =

@@ -140,6 +140,8 @@ export const API_ERROR_MESSAGES = {
     "That training block is not in force today; start a day of the routine",
   SESSION_FINISHED: "Cannot modify set logs for a finished session",
   SESSION_ALREADY_FINISHED: "Session already finished with a different status",
+  WORKOUT_END_TIME_RANGE:
+    "A workout ends after it started and after its last set, and not in the future",
   EXTRA_SETS_MAX: "An exercise can take at most {max} extra sets",
   EXTRA_SET_NOT_NEXT: "Extra sets are added after the last set",
   PRESCRIBED_SET_NOT_REMOVABLE: "A prescribed set cannot be removed",
@@ -192,6 +194,8 @@ export const API_ERROR_MESSAGES = {
   CORRECTION_NOTHING_TO_CORRECT:
     "Nothing to correct: every set already reads that way",
   CORRECTION_KEEPS_ONE_SET: "A finished workout keeps at least one completed set",
+  CORRECTION_END_TIME_RANGE:
+    "A workout's end can only move earlier, and not before it started or before its last set",
 
   // ── Sharing a workout ──────────────────────────────────────────────────
   SESSION_SHARE_NOTHING_CHOSEN: "Choose at least one part of the recap to share",
