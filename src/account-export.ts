@@ -130,6 +130,28 @@ export interface AccountExportV1 {
   personalRecords: AccountExportPersonalRecord[];
   trainingEvents: AccountExportTrainingEvent[];
   goals: AccountExportGoal[];
+  /**
+   * BILL-01: every plan grant the account has had, revoked and expired ones
+   * included, oldest first.
+   */
+  entitlementGrants?: Array<{
+    planId: string;
+    source: string;
+    startsAt: IsoDateString;
+    expiresAt: IsoDateString | null;
+    revokedAt: IsoDateString | null;
+    note: string | null;
+    createdAt: IsoDateString;
+  }>;
+  /** BILL-01: the account's subscriptions, oldest first. */
+  subscriptions?: Array<{
+    planId: string;
+    status: string;
+    provider: string;
+    externalId: string | null;
+    currentPeriodEnd: IsoDateString | null;
+    createdAt: IsoDateString;
+  }>;
   /** PROG-12: every dated body weight and measurement entry. */
   bodyMeasurements?: AccountExportBodyMeasurement[];
   trainingLocations: AccountExportTrainingLocation[];
