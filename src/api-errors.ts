@@ -263,6 +263,9 @@ export const API_ERROR_MESSAGES = {
   // ── Message requests (MSG-02) ──────────────────────────────────────────
   REQUEST_PENDING: "You can send more once they accept your request.",
 
+  // ── Plans (BILL-01) ────────────────────────────────────────────────────
+  ENTITLEMENT_REQUIRED: "This is available in Pro",
+
   // ── Account and settings ───────────────────────────────────────────────
   ACCOUNT_CONFLICT: "Account conflict for this email",
   ACCOUNT_DELETE_CONFIRMATION:

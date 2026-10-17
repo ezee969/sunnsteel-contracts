@@ -1,5 +1,6 @@
 export * from "./shared";
 export * from "./user";
+export * from "./billing";
 export * from "./dashboard-layout";
 export * from "./locale";
 export * from "./regional";

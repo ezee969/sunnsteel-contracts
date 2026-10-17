@@ -2,6 +2,7 @@ import type { DashboardLayout } from "./dashboard-layout";
 import type { AppLocale } from "./locale";
 import type { MemberMessagingState, MessagePermission } from "./messages";
 import type { OnboardingState } from "./onboarding";
+import type { PlanId } from "./billing";
 import type { LengthUnit, WeekStartsOn } from "./regional";
 import type {
   IsoDateString,
@@ -293,6 +294,11 @@ export interface UserProfile {
    * it; a client treats a missing one as Monday (`DEFAULT_WEEK_STARTS_ON`).
    */
   weekStartsOn?: WeekStartsOn;
+  /**
+   * BILL-01: the plan the account is on now, decided by the server from its
+   * grants. On the owner's own profile only; a missing one is FREE.
+   */
+  plan?: PlanId;
   /** ONBOARD-01: how far the account has come through onboarding. */
   onboarding?: OnboardingState;
   /** MSG-01: who may start a conversation with this member. */
