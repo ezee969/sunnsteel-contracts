@@ -50,6 +50,11 @@ export interface PersonalGoalProgress extends MeasurableGoal {
   remainingValue: number | null;
   progressPercent: number | null;
   achieved: boolean | null;
+  /**
+   * BILL-02: a goal past the plan's goal limit is kept but not evaluated
+   * (every value null) until the plan allows it again. Missing means false.
+   */
+  paused?: boolean;
   /** Monday-based local week for WEEKLY_SESSIONS and WEEKLY_VOLUME. */
   periodStart?: string;
 }

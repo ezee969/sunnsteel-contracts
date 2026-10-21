@@ -185,3 +185,41 @@ export interface BillingStatus {
   /** The grants in force now, the one that lasts longest first. */
   grants: EntitlementGrantSummary[];
 }
+
+/**
+ * BILL-02: the longest strength-trend range Free reads, in days. Progress
+ * offers 30 and 90 days on Free; a range wider than this -- or one with no
+ * start, "all time" -- needs `STRENGTH_TRENDS_LONG_RANGES`. The current best
+ * of every lift is answered whatever the range, so a downgrade hides no fact.
+ */
+export const FREE_STRENGTH_RANGE_DAYS = 90;
+
+/** Slack for clocks and calendar months, so a 90-day range never reads as 91. */
+const STRENGTH_RANGE_SLACK_DAYS = 2;
+
+export function strengthRangeNeedsPro(range: {
+  from?: string | Date | null;
+  to?: string | Date | null;
+}): boolean {
+  if (!range.from) return true;
+  const to = range.to ? time(range.to) : Date.now();
+  const days = (to - time(range.from)) / (24 * 60 * 60 * 1000);
+  return days > FREE_STRENGTH_RANGE_DAYS + STRENGTH_RANGE_SLACK_DAYS;
+}
+
+/**
+ * BILL-02: what a plan's limit allows for a replace-the-whole-list write
+ * (goals, training locations). Within the limit anything goes; past it, the
+ * write may keep, edit or drop what is stored but add nothing new -- so a
+ * downgrade never deletes what was made under Pro and a member can still
+ * tidy it, while only new use stops.
+ */
+export function listWithinLimit(
+  limit: number | null,
+  requestedIds: readonly (string | null | undefined)[],
+  storedIds: readonly string[],
+): boolean {
+  if (limit === null || requestedIds.length <= limit) return true;
+  const stored = new Set(storedIds);
+  return requestedIds.every((id) => typeof id === "string" && stored.has(id));
+}

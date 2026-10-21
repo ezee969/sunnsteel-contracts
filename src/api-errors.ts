@@ -265,6 +265,7 @@ export const API_ERROR_MESSAGES = {
 
   // ── Plans (BILL-01) ────────────────────────────────────────────────────
   ENTITLEMENT_REQUIRED: "This is available in Pro",
+  PLAN_LIMIT_REACHED: "Your plan allows {max} here",
 
   // ── Account and settings ───────────────────────────────────────────────
   ACCOUNT_CONFLICT: "Account conflict for this email",
