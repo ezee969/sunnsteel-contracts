@@ -2,7 +2,7 @@
  * BILL-01: plans and entitlements. The server decides every entitlement; a
  * client reads the answer (`GET /billing/me`, `UserProfile.plan`) and never
  * works access out for itself. Nothing is gated by these yet: `BILL-02`
- * applies the Pro split, and no payment exists until `BILL-03`.
+ * applies the Pro split, and `BILL-03` sells Pro through a payment provider.
  */
 
 /** Every plan, lowest first. An account with no active grant is on FREE. */
@@ -184,6 +184,91 @@ export interface BillingStatus {
   limits: PlanLimits;
   /** The grants in force now, the one that lasts longest first. */
   grants: EntitlementGrantSummary[];
+  /** BILL-03: whether Pro can be bought now, at what price, and a waiting attempt. */
+  checkout: CheckoutOffer;
+  /** BILL-03: the member's latest subscription, or null without one. */
+  subscription: SubscriptionSummary | null;
+}
+
+/**
+ * BILL-03: what Pro costs, as the owner decided at claim (2026-10-22): one
+ * monthly plan, charged by Mercado Pago in Argentine pesos. While payments run
+ * in the provider's sandbox no money is charged, and every billing surface
+ * says so (`CheckoutOffer.testMode`).
+ */
+export interface PlanPrice {
+  planId: PlanId;
+  amount: number;
+  currency: string;
+  interval: "MONTH";
+}
+
+export const PRO_PRICE: PlanPrice = {
+  planId: "PRO",
+  amount: 4999,
+  currency: "ARS",
+  interval: "MONTH",
+};
+
+/**
+ * A checkout attempt's states. PENDING waits for the member on the
+ * provider's page or for the provider to confirm; COMPLETED means a confirmed
+ * read of the provider granted Pro; FAILED means the provider refused to open
+ * it; CANCELED means the provider reported it cancelled or paused; EXPIRED
+ * means it waited too long and a new attempt may start.
+ */
+export const CHECKOUT_ATTEMPT_STATUSES = [
+  "PENDING",
+  "COMPLETED",
+  "FAILED",
+  "CANCELED",
+  "EXPIRED",
+] as const;
+export type CheckoutAttemptStatus = (typeof CHECKOUT_ATTEMPT_STATUSES)[number];
+
+/** How long an unconfirmed attempt is offered again before a new one starts. */
+export const CHECKOUT_ATTEMPT_TTL_MINUTES = 60;
+
+export interface CheckoutAttemptSummary {
+  id: string;
+  planId: PlanId;
+  status: CheckoutAttemptStatus;
+  /** The provider's page; null once the attempt is no longer waiting. */
+  checkoutUrl: string | null;
+  createdAt: string;
+  expiresAt: string;
+}
+
+export interface CheckoutOffer {
+  /** False until a provider is configured; never the fake provider in production. */
+  available: boolean;
+  /** True while payments run in the provider's sandbox: no money is charged. */
+  testMode: boolean;
+  price: PlanPrice;
+  /** An attempt still waiting, so a second press returns to it instead of opening another. */
+  pending: CheckoutAttemptSummary | null;
+}
+
+export const SUBSCRIPTION_STATUSES = ["TRIALING", "ACTIVE", "PAST_DUE", "CANCELED"] as const;
+export type SubscriptionStatus = (typeof SUBSCRIPTION_STATUSES)[number];
+
+export interface SubscriptionSummary {
+  planId: PlanId;
+  status: SubscriptionStatus;
+  /** When the paid period ends, as the provider last reported it. */
+  currentPeriodEnd: string | null;
+  createdAt: string;
+}
+
+/**
+ * `POST /billing/checkout/:id/confirm`: what a confirmed read of the provider
+ * found. **Returning from checkout grants nothing by itself**: Pro starts only
+ * when the provider reports the subscription authorized (`COMPLETED`); a
+ * `PENDING` attempt is read again later.
+ */
+export interface CheckoutConfirmation {
+  attempt: CheckoutAttemptSummary;
+  billing: BillingStatus;
 }
 
 /**

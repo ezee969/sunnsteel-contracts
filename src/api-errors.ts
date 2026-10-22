@@ -266,6 +266,11 @@ export const API_ERROR_MESSAGES = {
   // ── Plans (BILL-01) ────────────────────────────────────────────────────
   ENTITLEMENT_REQUIRED: "This is available in Pro",
   PLAN_LIMIT_REACHED: "Your plan allows {max} here",
+  // ── Checkout (BILL-03) ─────────────────────────────────────────────────
+  CHECKOUT_UNAVAILABLE: "Checkout isn't available right now",
+  CHECKOUT_PROVIDER_ERROR:
+    "Mercado Pago couldn't be reached. Nothing was charged; try again.",
+  PLAN_ALREADY_PRO: "You already have Pro",
 
   // ── Account and settings ───────────────────────────────────────────────
   ACCOUNT_CONFLICT: "Account conflict for this email",

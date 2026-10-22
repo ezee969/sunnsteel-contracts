@@ -152,6 +152,14 @@ export interface AccountExportV1 {
     currentPeriodEnd: IsoDateString | null;
     createdAt: IsoDateString;
   }>;
+  /** BILL-03: every checkout attempt, oldest first. */
+  checkoutAttempts?: Array<{
+    planId: string;
+    status: string;
+    provider: string;
+    createdAt: IsoDateString;
+    completedAt: IsoDateString | null;
+  }>;
   /** PROG-12: every dated body weight and measurement entry. */
   bodyMeasurements?: AccountExportBodyMeasurement[];
   trainingLocations: AccountExportTrainingLocation[];
