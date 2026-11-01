@@ -160,6 +160,18 @@ export interface AccountExportV1 {
     createdAt: IsoDateString;
     completedAt: IsoDateString | null;
   }>;
+  /**
+   * INTEL-03: each model call made for the account, oldest first. What the
+   * member typed is never stored, so there is none of it here.
+   */
+  aiUsageRecords?: Array<{
+    feature: string;
+    status: string;
+    model: string;
+    inputTokens: number;
+    outputTokens: number;
+    createdAt: IsoDateString;
+  }>;
   /** PROG-12: every dated body weight and measurement entry. */
   bodyMeasurements?: AccountExportBodyMeasurement[];
   trainingLocations: AccountExportTrainingLocation[];

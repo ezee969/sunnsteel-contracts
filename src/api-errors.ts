@@ -271,6 +271,14 @@ export const API_ERROR_MESSAGES = {
   CHECKOUT_PROVIDER_ERROR:
     "Mercado Pago couldn't be reached. Nothing was charged; try again.",
   PLAN_ALREADY_PRO: "You already have Pro",
+  // ── Routine drafts (INTEL-03) ──────────────────────────────────────────
+  ROUTINE_DRAFT_QUOTA_REACHED: "You have used your {max} drafts this month",
+  ROUTINE_DRAFTS_PAUSED: "Drafting is paused until next month",
+  ROUTINE_DRAFTS_UNAVAILABLE: "Drafting isn't available right now",
+  ROUTINE_DRAFT_NOT_TRAINING:
+    "That doesn't read like a training request. Nothing was counted.",
+  ROUTINE_DRAFT_FAILED:
+    "We couldn't write a draft from that. Nothing was counted; try again.",
 
   // ── Account and settings ───────────────────────────────────────────────
   ACCOUNT_CONFLICT: "Account conflict for this email",
