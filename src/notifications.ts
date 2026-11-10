@@ -24,6 +24,8 @@ export const NOTIFICATION_KINDS = [
   'TRAINING_PARTNER_ACHIEVEMENT',
   // ROUT-18: an LP exercise finished its 8-step block.
   'LINEAR_BLOCK_FINISHED',
+  // BILL-04: a renewal failed and Pro is in its grace period.
+  'SUBSCRIPTION_PAYMENT_FAILED',
 ] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 
@@ -162,6 +164,17 @@ export interface LinearBlockFinishedNotification extends NotificationBase {
   estimatedMaxKg: number | null;
 }
 
+/**
+ * BILL-04: a renewal charge failed. Pro stays until `graceEndsAt` while the
+ * provider retries; the link is Settings > Account, where the member updates
+ * the payment method on the provider's page or cancels. Never sent by email
+ * until an email sender exists (TD-57).
+ */
+export interface SubscriptionPaymentFailedNotification extends NotificationBase {
+  kind: 'SUBSCRIPTION_PAYMENT_FAILED';
+  graceEndsAt: string;
+}
+
 /** Named to stay clear of the DOM's `Notification`. */
 export type AppNotification =
   | AchievementNotification
@@ -171,7 +184,8 @@ export type AppNotification =
   | TrainingPartnerEncouragementNotification
   | TrainingPartnerSessionNotification
   | TrainingPartnerAchievementNotification
-  | LinearBlockFinishedNotification;
+  | LinearBlockFinishedNotification
+  | SubscriptionPaymentFailedNotification;
 
 /** GET /notifications?limit=&cursor= */
 export interface NotificationsQuery {

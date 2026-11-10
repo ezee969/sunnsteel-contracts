@@ -271,6 +271,8 @@ export const API_ERROR_MESSAGES = {
   CHECKOUT_PROVIDER_ERROR:
     "Mercado Pago couldn't be reached. Nothing was charged; try again.",
   PLAN_ALREADY_PRO: "You already have Pro",
+  // ── Subscription (BILL-04) ─────────────────────────────────────────────
+  SUBSCRIPTION_NOT_ACTIVE: "There is no subscription to cancel",
   // ── Routine drafts (INTEL-03) ──────────────────────────────────────────
   ROUTINE_DRAFT_QUOTA_REACHED: "You have used your {max} drafts this month",
   ROUTINE_DRAFTS_PAUSED: "Drafting is paused until next month",

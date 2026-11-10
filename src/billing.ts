@@ -243,9 +243,24 @@ export interface CheckoutAttemptSummary {
   expiresAt: string;
 }
 
+/**
+ * BILL-04, as the owner decided at claim (2026-11-10): a member's first
+ * subscription starts with a free trial of this many days, charged when it
+ * ends; one trial per account, ever.
+ */
+export const SUBSCRIPTION_TRIAL_DAYS = 7;
+
+/**
+ * BILL-04: after a renewal fails, Pro stays this many days (`PAST_DUE`) while
+ * the provider retries, then the account is on Free. Nothing is deleted.
+ */
+export const SUBSCRIPTION_GRACE_DAYS = 7;
+
 export interface CheckoutOffer {
   /** False until a provider is configured; never the fake provider in production. */
   available: boolean;
+  /** BILL-04: the trial a new subscription would start with, or null when this account had one. */
+  trialDays: number | null;
   /** True while payments run in the provider's sandbox: no money is charged. */
   testMode: boolean;
   price: PlanPrice;
@@ -262,6 +277,12 @@ export interface SubscriptionSummary {
   /** When the paid period ends, as the provider last reported it. */
   currentPeriodEnd: string | null;
   createdAt: string;
+  /** BILL-04: the end of the free trial while `TRIALING`, else null. */
+  trialEndsAt: string | null;
+  /** BILL-04: when Pro ends unless a retry succeeds, while `PAST_DUE`; else null. */
+  graceEndsAt: string | null;
+  /** BILL-04: cancelled, so nothing renews and Pro ends at `currentPeriodEnd`. */
+  cancelAtPeriodEnd: boolean;
 }
 
 /**
