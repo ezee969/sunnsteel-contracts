@@ -269,7 +269,7 @@ export const API_ERROR_MESSAGES = {
   // ── Checkout (BILL-03) ─────────────────────────────────────────────────
   CHECKOUT_UNAVAILABLE: "Checkout isn't available right now",
   CHECKOUT_PROVIDER_ERROR:
-    "Mercado Pago couldn't be reached. Nothing was charged; try again.",
+    "Mercado Pago didn't complete the request. Nothing was charged or changed; try again.",
   PLAN_ALREADY_PRO: "You already have Pro",
   // ── Subscription (BILL-04) ─────────────────────────────────────────────
   SUBSCRIPTION_NOT_ACTIVE: "There is no subscription to cancel",
