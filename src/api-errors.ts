@@ -273,6 +273,8 @@ export const API_ERROR_MESSAGES = {
   PLAN_ALREADY_PRO: "You already have Pro",
   // ── Subscription (BILL-04) ─────────────────────────────────────────────
   SUBSCRIPTION_NOT_ACTIVE: "There is no subscription to cancel",
+  // ── Consumer-law requests (BILL-07) ────────────────────────────────────
+  CONSUMER_REQUEST_INVALID: "Check your name and email and try again",
   // ── Routine drafts (INTEL-03) ──────────────────────────────────────────
   ROUTINE_DRAFT_QUOTA_REACHED: "You have used your {max} drafts this month",
   ROUTINE_DRAFTS_PAUSED: "Drafting is paused until next month",

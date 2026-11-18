@@ -1,3 +1,4 @@
+import type { ConsumerRequestKind } from './consumer-requests';
 import type { IsoDateString } from './shared';
 import type { TrainingPartnerEncouragementKind } from './training-partners';
 
@@ -26,6 +27,8 @@ export const NOTIFICATION_KINDS = [
   'LINEAR_BLOCK_FINISHED',
   // BILL-04: a renewal failed and Pro is in its grace period.
   'SUBSCRIPTION_PAYMENT_FAILED',
+  // BILL-07: someone asked to revoke a purchase or cancel; moderators only.
+  'CONSUMER_REQUEST',
 ] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 
@@ -175,6 +178,16 @@ export interface SubscriptionPaymentFailedNotification extends NotificationBase 
   graceEndsAt: string;
 }
 
+/**
+ * BILL-07: a revocation or cancellation request arrived. Written to every
+ * moderator, because the law expects it handled promptly and there is no
+ * email until TD-57; the link is Moderation, where the request is read.
+ */
+export interface ConsumerRequestNotification extends NotificationBase {
+  kind: 'CONSUMER_REQUEST';
+  request: { kind: ConsumerRequestKind; code: string };
+}
+
 /** Named to stay clear of the DOM's `Notification`. */
 export type AppNotification =
   | AchievementNotification
@@ -185,7 +198,8 @@ export type AppNotification =
   | TrainingPartnerSessionNotification
   | TrainingPartnerAchievementNotification
   | LinearBlockFinishedNotification
-  | SubscriptionPaymentFailedNotification;
+  | SubscriptionPaymentFailedNotification
+  | ConsumerRequestNotification;
 
 /** GET /notifications?limit=&cursor= */
 export interface NotificationsQuery {
