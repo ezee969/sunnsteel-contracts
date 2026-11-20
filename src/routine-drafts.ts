@@ -70,11 +70,16 @@ export const ROUTINE_DRAFT_STATES = [
 ] as const;
 export type RoutineDraftState = (typeof ROUTINE_DRAFT_STATES)[number];
 
-/** `GET /routine-drafts/usage`. Only a delivered draft counts. */
+/**
+ * `GET /routine-drafts/usage`. Every request the model answered counts --
+ * a draft, a request that was not about training, or an answer that failed
+ * its check -- so asking for something else still costs a request. Only a
+ * provider failure that answered nothing is not counted.
+ */
 export interface RoutineDraftUsage {
   state: RoutineDraftState;
   used: number;
-  /** The plan's monthly drafts. */
+  /** The plan's monthly requests. */
   limit: number;
   /** When the month ends: the first of the next month, UTC. */
   resetsAt: string;

@@ -276,13 +276,12 @@ export const API_ERROR_MESSAGES = {
   // ── Consumer-law requests (BILL-07) ────────────────────────────────────
   CONSUMER_REQUEST_INVALID: "Check your name and email and try again",
   // ── Routine drafts (INTEL-03) ──────────────────────────────────────────
-  ROUTINE_DRAFT_QUOTA_REACHED: "You have used your {max} drafts this month",
+  ROUTINE_DRAFT_QUOTA_REACHED: "You have used your {max} requests this month",
   ROUTINE_DRAFTS_PAUSED: "Drafting is paused until next month",
   ROUTINE_DRAFTS_UNAVAILABLE: "Drafting isn't available right now",
   ROUTINE_DRAFT_NOT_TRAINING:
-    "That doesn't read like a training request. Nothing was counted.",
-  ROUTINE_DRAFT_FAILED:
-    "We couldn't write a draft from that. Nothing was counted; try again.",
+    "That doesn't read like a training request. It still used one of this month's requests.",
+  ROUTINE_DRAFT_FAILED: "We couldn't write a draft from that; try again.",
 
   // ── Account and settings ───────────────────────────────────────────────
   ACCOUNT_CONFLICT: "Account conflict for this email",
