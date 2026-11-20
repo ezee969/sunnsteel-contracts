@@ -16,7 +16,8 @@ export type TrainingReviewQuestion = (typeof TRAINING_REVIEW_QUESTIONS)[number];
 
 /** How many of the member's finished workouts one review reads. */
 export const TRAINING_REVIEW_WORKOUTS_MIN = 2;
-export const TRAINING_REVIEW_WORKOUTS_MAX = 6;
+/** Twelve since 2026-11-20 (it was six), for a wider view, at the owner's request. */
+export const TRAINING_REVIEW_WORKOUTS_MAX = 12;
 /** The picker offers the member's latest finished workouts, newest first. */
 export const TRAINING_REVIEW_CANDIDATES = 20;
 /** At most this many findings in a review. */
