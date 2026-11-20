@@ -77,8 +77,10 @@ export const PLAN_LIMIT_KEYS = [
   "TRAINING_LOCATIONS",
   /** PROG-03, PROG-04: weeks of muscle history. */
   "MUSCLE_HISTORY_WEEKS",
-  /** INTEL-03: routine drafts delivered per calendar month (UTC). */
+  /** INTEL-03: routine-draft requests the model answered per calendar month (UTC). */
   "ROUTINE_DRAFTS_PER_MONTH",
+  /** INTEL-04: training reviews the model answered per calendar month (UTC). */
+  "TRAINING_REVIEWS_PER_MONTH",
 ] as const;
 export type PlanLimitKey = (typeof PLAN_LIMIT_KEYS)[number];
 
@@ -106,6 +108,7 @@ export const PLANS: Record<PlanId, PlanDefinition> = {
       TRAINING_LOCATIONS: 1,
       MUSCLE_HISTORY_WEEKS: 4,
       ROUTINE_DRAFTS_PER_MONTH: 0,
+      TRAINING_REVIEWS_PER_MONTH: 0,
     },
   },
   PRO: {
@@ -117,6 +120,7 @@ export const PLANS: Record<PlanId, PlanDefinition> = {
       TRAINING_LOCATIONS: null,
       MUSCLE_HISTORY_WEEKS: 12,
       ROUTINE_DRAFTS_PER_MONTH: 10,
+      TRAINING_REVIEWS_PER_MONTH: 20,
     },
   },
 };
