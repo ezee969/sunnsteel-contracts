@@ -36,6 +36,11 @@ export interface SetLogValues {
   reps: number | null;
   rpe: number | null;
   isCompleted: boolean;
+  /**
+   * LIVE-26: a match set's mini-sets. Absent from corrections saved before
+   * it, and on a request that leaves them as they are.
+   */
+  matchReps?: number[] | null;
 }
 
 /** One changed set, as it was and as it became. */
@@ -160,12 +165,15 @@ export function sessionCorrectionWindow(
   return { correctableUntil: until.toISOString(), closedReason: null };
 }
 
+const miniSets = (values: SetLogValues) => (values.matchReps ?? []).join(",");
+
 /** Whether two sets of values differ in anything a correction records. */
 export function setLogValuesDiffer(a: SetLogValues, b: SetLogValues): boolean {
   return (
     a.weight !== b.weight ||
     a.reps !== b.reps ||
     a.rpe !== b.rpe ||
-    a.isCompleted !== b.isCompleted
+    a.isCompleted !== b.isCompleted ||
+    miniSets(a) !== miniSets(b)
   );
 }

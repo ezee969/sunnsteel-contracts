@@ -150,6 +150,20 @@ export const API_ERROR_MESSAGES = {
   SWAP_SETS_COMPLETED:
     "This exercise already has completed sets. Swap it before completing any.",
   NOTES_DISCARDED_SESSION: "A discarded workout cannot take notes",
+  // ── Myo-rep match (LIVE-26) ────────────────────────────────────────────
+  MATCH_SET_PLACEMENT: "A match set follows a working set",
+  MATCH_SETS_MAX: "A working set takes at most {max} match sets",
+  MATCH_SET_LINEAR_BLOCK: "An exercise on an 8-week block takes no match sets",
+  MATCH_MINI_SETS_MAX: "A match set takes at most {max} mini-sets",
+  MATCH_MINI_SETS_NOT_MATCH: "Only a match set takes mini-sets",
+  // ── Changing the day during a workout (LIVE-25) ────────────────────────
+  DAY_EDIT_SESSION_NOT_ACTIVE:
+    "The day can only be changed during an active workout",
+  DAY_EDIT_EXERCISES_MAX: "A day can hold at most {max} exercises",
+  DAY_EDIT_ORDER_MISMATCH:
+    "The new order must name every exercise of the day once",
+  DAY_EDIT_LINEAR_BLOCK:
+    "An 8-week block starts from the routine builder, not during a workout",
 
   // ── Linear periodization (ROUT-17 to ROUT-19) ──────────────────────────
   LINEAR_BLOCK_INVALID: "This exercise's block is not valid: {reason}",

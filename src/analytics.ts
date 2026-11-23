@@ -103,6 +103,8 @@ export interface ExercisePerformanceSet {
   reps: number;
   weightKg?: number | null;
   rpe?: number | null;
+  /** LIVE-26: a match set's mini-sets; absent on any other set. */
+  matchReps?: number[];
 }
 
 export interface ExercisePerformancePrescriptionSet {

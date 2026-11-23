@@ -27,6 +27,11 @@ export interface SetLog {
   isCompleted: boolean;
   /** LIVE-12: what this set was for in this workout. */
   kind: SetKind;
+  /**
+   * LIVE-26: a match set's mini-sets after its first effort (`reps`), in
+   * order; empty on every other set. See `repsDone`.
+   */
+  matchReps?: number[];
   completedAt?: IsoDateString | null;
   createdAt: IsoDateString;
   updatedAt: IsoDateString;
@@ -94,6 +99,11 @@ export interface WorkoutSession {
       /** ROUT-12: done in rounds with the next exercise of the day. */
       linkedToNext?: boolean;
       /**
+       * LIVE-25: set when the exercise joined the day during this workout;
+       * absent on every exercise the workout started with.
+       */
+      addedAt?: IsoDateString | null;
+      /**
        * ROUT-17: the slot's block as it stood when the workout started; the
        * sets' weights are the step's prescribed loads.
        */
@@ -128,6 +138,8 @@ export interface PreviousSetPerformance {
   reps: number;
   weight?: number | null;
   rpe?: number | null;
+  /** LIVE-26: a match set's mini-sets; absent or empty on any other set. */
+  matchReps?: number[];
 }
 
 /** Stable successful response of GET /workouts/sessions/:id/previous-performance. */
@@ -231,6 +243,12 @@ export interface UpsertSetLogRequest {
    * its own.
    */
   kind?: SetKind;
+  /**
+   * LIVE-26: a match set's mini-sets, replacing the stored ones. Only a match
+   * set takes them (`MATCH_MINI_SETS_MAX` at most); a set changed to another
+   * kind loses them.
+   */
+  matchReps?: number[];
 }
 
 /**
@@ -492,4 +510,53 @@ export interface WorkoutStatsResponse {
   completionRate: number;
   weeklyWorkoutsCount: number;
   activeDaysThisWeek: number;
+}
+
+// Changing the day during a workout (LIVE-25) ------------------------------
+
+/** The most exercises a day can hold once one is added during a workout. */
+export const DAY_EDIT_EXERCISES_MAX = 20;
+
+/** One set of an exercise added during a workout, as the builder writes it. */
+export interface AddSessionExerciseSet {
+  setNumber: number;
+  repType: RepType;
+  reps?: number | null;
+  minReps?: number | null;
+  maxReps?: number | null;
+  weight?: number | null;
+  rir?: number | null;
+  kind?: SetKind;
+}
+
+/**
+ * POST /workouts/sessions/:id/exercises: add an exercise to the day being
+ * trained, for good. It joins the plan in force (a block's or deload's
+ * working copy while one is) at the end of the day, and today's workout at
+ * once. An 8-week block is never started here.
+ */
+export interface AddSessionExerciseRequest {
+  exerciseId: string;
+  restSeconds: number;
+  progressionScheme: Exclude<ProgressionScheme, 'LINEAR_PERIODIZATION'>;
+  minWeightIncrement?: number;
+  note?: string;
+  sets: AddSessionExerciseSet[];
+}
+
+/**
+ * PUT /workouts/sessions/:id/exercise-order: the day's exercises in their new
+ * order, every one named once by its `routineDay.exercises[].id`. The workout
+ * follows at once and the routine from the next one. A superset or circuit
+ * link survives only while its pair stays side by side.
+ */
+export interface ReorderSessionExercisesRequest {
+  routineExerciseIds: string[];
+}
+
+/** The response of both day changes. */
+export interface SessionDayEditResponse {
+  session: WorkoutSession;
+  /** The plan the change was written to. */
+  plan: 'ROUTINE' | 'TRAINING_BLOCK' | 'DELOAD';
 }

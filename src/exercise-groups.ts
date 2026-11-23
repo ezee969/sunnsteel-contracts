@@ -103,3 +103,38 @@ export function hasOversizedGroup(exercises: readonly Linkable[]): boolean {
     (group) => group.indices.length > EXERCISE_GROUP_MAX,
   );
 }
+
+/**
+ * LIVE-25: a day's exercises in a new order, each keeping its link only while
+ * the exercise it linked to is still right after it -- a pair is kept only
+ * while side by side -- and the last never linking.
+ */
+export function reorderExerciseLinks<T extends Linkable & { id: string }>(
+  exercises: readonly T[],
+  orderedIds: readonly string[],
+): T[] {
+  const byId = new Map(exercises.map((exercise) => [exercise.id, exercise]));
+  const nextOf = new Map<string, string>();
+  exercises.forEach((exercise, index) => {
+    const next = exercises[index + 1];
+    if (exercise.linkedToNext && next) nextOf.set(exercise.id, next.id);
+  });
+  const ordered = orderedIds.map((id) => byId.get(id)).filter((e): e is T => Boolean(e));
+  return ordered.map((exercise, index) => {
+    const next = nextOf.get(exercise.id);
+    const linked = next !== undefined && next === ordered[index + 1]?.id;
+    return Boolean(exercise.linkedToNext) === linked
+      ? exercise
+      : { ...exercise, linkedToNext: linked };
+  });
+}
+
+/** LIVE-25: whether that new order would break a superset or circuit link. */
+export function reorderBreaksLinks<T extends Linkable & { id: string }>(
+  exercises: readonly T[],
+  orderedIds: readonly string[],
+): boolean {
+  const before = exercises.filter((exercise, index) => exercise.linkedToNext && index < exercises.length - 1).length;
+  const after = reorderExerciseLinks(exercises, orderedIds).filter((exercise) => exercise.linkedToNext).length;
+  return after < before;
+}
