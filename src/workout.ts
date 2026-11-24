@@ -547,11 +547,15 @@ export interface AddSessionExerciseRequest {
 /**
  * PUT /workouts/sessions/:id/exercise-order: the day's exercises in their new
  * order, every one named once by its `routineDay.exercises[].id`. The workout
- * follows at once and the routine from the next one. A superset or circuit
- * link survives only while its pair stays side by side.
+ * follows at once and the routine from the next one. Without
+ * `linkedToNext`, a superset or circuit link survives only while its pair
+ * stays side by side; with it (LIVE-29: `movedDay`, `movedGroupDay`,
+ * `ungroupedDay`), each exercise takes the link given at its place, and no
+ * group may pass `EXERCISE_GROUP_MAX`.
  */
 export interface ReorderSessionExercisesRequest {
   routineExerciseIds: string[];
+  linkedToNext?: boolean[];
 }
 
 /**

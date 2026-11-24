@@ -175,3 +175,117 @@ export function removalChangesGroup<T extends Linkable & { id: string }>(
     Boolean(index > 0 && exercises[index - 1].linkedToNext)
   );
 }
+
+/**
+ * LIVE-29: a day's new order with the links it keeps, as a reorder asks for
+ * them: `linkedToNext[i]` is the link of the exercise at `ids[i]`.
+ */
+export interface DayOrder {
+  ids: string[];
+  linkedToNext: boolean[];
+}
+
+/** The day in runs: each group whole, each exercise on its own alone. */
+function dayRuns(exercises: readonly Linkable[]): number[][] {
+  const runs: number[][] = [];
+  const groups = new Map(exerciseGroups(exercises).map((group) => [group.indices[0], group]));
+  for (let index = 0; index < exercises.length; ) {
+    const indices = groups.get(index)?.indices ?? [index];
+    runs.push(indices);
+    index = indices[indices.length - 1] + 1;
+  }
+  return runs;
+}
+
+/** Runs back into an order: a run of several is one group, linked through. */
+function orderOfRuns<T extends { id: string }>(
+  exercises: readonly T[],
+  runs: readonly number[][],
+): DayOrder {
+  const ids: string[] = [];
+  const linkedToNext: boolean[] = [];
+  for (const run of runs)
+    run.forEach((index, at) => {
+      ids.push(exercises[index].id);
+      linkedToNext.push(at < run.length - 1);
+    });
+  return { ids, linkedToNext };
+}
+
+const indexOfId = <T extends { id: string }>(exercises: readonly T[], id: string) =>
+  exercises.findIndex((exercise) => exercise.id === id);
+
+/**
+ * LIVE-29: one place up (-1) or down (+1) for an exercise. On its own, it
+ * jumps a whole superset or circuit; inside one, it changes places with the
+ * member beside it and the group stays. Null where it cannot go: the ends of
+ * the day, and the ends of its group (leaving one is `ungroupedDay`).
+ */
+export function movedDay<T extends Linkable & { id: string }>(
+  exercises: readonly T[],
+  id: string,
+  delta: -1 | 1,
+): DayOrder | null {
+  const index = indexOfId(exercises, id);
+  if (index === -1) return null;
+  const runs = dayRuns(exercises);
+  const at = runs.findIndex((run) => run.includes(index));
+  const run = runs[at];
+  if (run.length > 1) {
+    const place = run.indexOf(index);
+    const to = place + delta;
+    if (to < 0 || to >= run.length) return null;
+    const swapped = [...run];
+    [swapped[place], swapped[to]] = [swapped[to], swapped[place]];
+    return orderOfRuns(exercises, runs.map((each, i) => (i === at ? swapped : each)));
+  }
+  return movedRun(exercises, runs, at, delta);
+}
+
+/**
+ * LIVE-29: a whole superset or circuit -- the one `id` belongs to -- one place
+ * up or down, past the exercise or group beside it, its links kept. Null for
+ * an exercise on its own and at the ends of the day.
+ */
+export function movedGroupDay<T extends Linkable & { id: string }>(
+  exercises: readonly T[],
+  id: string,
+  delta: -1 | 1,
+): DayOrder | null {
+  const index = indexOfId(exercises, id);
+  if (index === -1) return null;
+  const runs = dayRuns(exercises);
+  const at = runs.findIndex((run) => run.includes(index));
+  return runs[at].length > 1 ? movedRun(exercises, runs, at, delta) : null;
+}
+
+function movedRun<T extends { id: string }>(
+  exercises: readonly T[],
+  runs: readonly number[][],
+  at: number,
+  delta: -1 | 1,
+): DayOrder | null {
+  const to = at + delta;
+  if (to < 0 || to >= runs.length) return null;
+  const moved = [...runs];
+  [moved[at], moved[to]] = [moved[to], moved[at]];
+  return orderOfRuns(exercises, moved);
+}
+
+/**
+ * LIVE-29: an exercise taken out of its superset or circuit on purpose: it
+ * goes on its own right after what is left of the group, which keeps its
+ * links (a pair left with one is no group). Null for one on its own.
+ */
+export function ungroupedDay<T extends Linkable & { id: string }>(
+  exercises: readonly T[],
+  id: string,
+): DayOrder | null {
+  const index = indexOfId(exercises, id);
+  if (index === -1) return null;
+  const runs = dayRuns(exercises);
+  const at = runs.findIndex((run) => run.includes(index));
+  if (runs[at].length < 2) return null;
+  const rest = runs[at].filter((each) => each !== index);
+  return orderOfRuns(exercises, [...runs.slice(0, at), rest, [index], ...runs.slice(at + 1)]);
+}
