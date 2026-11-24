@@ -554,7 +554,17 @@ export interface ReorderSessionExercisesRequest {
   routineExerciseIds: string[];
 }
 
-/** The response of both day changes. */
+/**
+ * DELETE /workouts/sessions/:id/exercises/:routineExerciseId/sets/:setNumber
+ * (LIVE-27): remove a prescribed set that is not done, for good. It leaves
+ * today's workout and the plan being trained, and the sets after it are
+ * renumbered with their logs. Refused for a done set, the exercise's last
+ * set, an 8-week block's working set, and a working set match sets follow.
+ * The response is a `SessionDayEditResponse`.
+ */
+export type RemoveSessionSetResponse = SessionDayEditResponse;
+
+/** The response of the day changes (LIVE-25, LIVE-27). */
 export interface SessionDayEditResponse {
   session: WorkoutSession;
   /** The plan the change was written to. */

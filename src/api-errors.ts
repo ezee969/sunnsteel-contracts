@@ -164,6 +164,12 @@ export const API_ERROR_MESSAGES = {
     "The new order must name every exercise of the day once",
   DAY_EDIT_LINEAR_BLOCK:
     "An 8-week block starts from the routine builder, not during a workout",
+  // ── Removing a set during a workout (LIVE-27) ───────────────────────────
+  SET_REMOVE_DONE: "A done set cannot be removed; untick it first",
+  SET_REMOVE_LAST: "An exercise keeps at least one set",
+  SET_REMOVE_LINEAR_BLOCK:
+    "The working sets of an 8-week block cannot be removed",
+  SET_REMOVE_NOT_PRESCRIBED: "That set is not part of the prescription",
 
   // ── Linear periodization (ROUT-17 to ROUT-19) ──────────────────────────
   LINEAR_BLOCK_INVALID: "This exercise's block is not valid: {reason}",
