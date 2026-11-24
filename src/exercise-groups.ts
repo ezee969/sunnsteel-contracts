@@ -138,3 +138,40 @@ export function reorderBreaksLinks<T extends Linkable & { id: string }>(
   const after = reorderExerciseLinks(exercises, orderedIds).filter((exercise) => exercise.linkedToNext).length;
   return after < before;
 }
+
+/**
+ * LIVE-28: a day's exercises without `removedId`, its links as the builder
+ * leaves them (ROUT-12): a member leaving the middle of a group bridges it,
+ * the exercise before it keeps a link only to what it linked to, and the
+ * last never links.
+ */
+export function removeExerciseLinks<T extends Linkable & { id: string }>(
+  exercises: readonly T[],
+  removedId: string,
+): T[] {
+  const index = exercises.findIndex((exercise) => exercise.id === removedId);
+  if (index === -1) return [...exercises];
+  const removed = exercises[index];
+  const kept = exercises.filter((exercise) => exercise.id !== removedId);
+  return normalizeExerciseLinks(
+    kept.map((exercise, at) =>
+      at === index - 1 && exercise.linkedToNext && !removed.linkedToNext
+        ? { ...exercise, linkedToNext: false }
+        : exercise,
+    ),
+  );
+}
+
+/** LIVE-28: whether removing `removedId` shrinks or ends a superset or circuit. */
+export function removalChangesGroup<T extends Linkable & { id: string }>(
+  exercises: readonly T[],
+  removedId: string,
+): boolean {
+  const index = exercises.findIndex((exercise) => exercise.id === removedId);
+  if (index === -1) return false;
+  const last = exercises.length - 1;
+  return (
+    Boolean(exercises[index].linkedToNext && index < last) ||
+    Boolean(index > 0 && exercises[index - 1].linkedToNext)
+  );
+}

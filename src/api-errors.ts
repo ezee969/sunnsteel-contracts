@@ -170,6 +170,8 @@ export const API_ERROR_MESSAGES = {
   SET_REMOVE_LINEAR_BLOCK:
     "The working sets of an 8-week block cannot be removed",
   SET_REMOVE_NOT_PRESCRIBED: "That set is not part of the prescription",
+  // ── Removing an exercise during a workout (LIVE-28) ─────────────────────
+  DAY_EDIT_LAST_EXERCISE: "A day keeps at least one exercise; swap it instead",
 
   // ── Linear periodization (ROUT-17 to ROUT-19) ──────────────────────────
   LINEAR_BLOCK_INVALID: "This exercise's block is not valid: {reason}",

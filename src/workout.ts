@@ -564,6 +564,14 @@ export interface ReorderSessionExercisesRequest {
  */
 export type RemoveSessionSetResponse = SessionDayEditResponse;
 
+/**
+ * LIVE-28: an exercise removed during a workout, for good -- from today's
+ * workout, its sets done or not (they no longer count), and from the plan
+ * being trained, an 8-week block with it. A day keeps at least one exercise
+ * (`DAY_EDIT_LAST_EXERCISE`). The response is a `SessionDayEditResponse`.
+ */
+export type RemoveSessionExerciseResponse = SessionDayEditResponse;
+
 /** The response of the day changes (LIVE-25, LIVE-27). */
 export interface SessionDayEditResponse {
   session: WorkoutSession;
