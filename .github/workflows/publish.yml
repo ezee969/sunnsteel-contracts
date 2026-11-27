@@ -1,0 +1,61 @@
+name: Publish
+
+# Publishes @sunsteel/contracts when a push to main carries a version that is
+# not on npm yet. It authenticates with npm trusted publishing (GitHub's OIDC
+# token), so there is no npm token in this repository and no one-time code:
+# npmjs.com trusts this repository's `publish.yml` for this package. A push
+# that does not change the version publishes nothing.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      # Trusted publishing needs npm 11.5.1 or later.
+      - name: Update npm
+        run: npm install -g npm@11
+
+      - name: Decide whether this version is new
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if npm view "@sunsteel/contracts@$VERSION" version > /dev/null 2>&1; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "$VERSION is already on npm; nothing to publish."
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install dependencies
+        if: steps.version.outputs.publish == 'true'
+        run: npm ci
+
+      - name: Verify
+        if: steps.version.outputs.publish == 'true'
+        run: npm run verify
+
+      - name: Publish ${{ steps.version.outputs.version }}
+        if: steps.version.outputs.publish == 'true'
+        run: npm publish --access public

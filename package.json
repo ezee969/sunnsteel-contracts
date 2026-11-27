@@ -1,9 +1,9 @@
 {
   "name": "@sunsteel/contracts",
-  "version": "0.115.0",
+  "version": "0.116.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ezee969/sunsteel-contracts.git"
+    "url": "git+https://github.com/ezee969/sunnsteel-contracts.git"
   },
   "private": false,
   "engines": {

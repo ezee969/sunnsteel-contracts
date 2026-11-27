@@ -104,14 +104,27 @@ export interface RenaissanceRankDefinition {
     | 'LAUREATE';
   title: string;
   description: string;
+  /** Counted sessions: completed, with at least one completed work set. */
   minimumSessions: number;
+  /** Monday-to-Sunday weeks holding at least one counted session. */
   minimumActiveWeeks: number;
+  /**
+   * Completed work sets across every finished workout (a warm-up never
+   * counts, a bodyweight set does). Zero below Maestro; from there it keeps a
+   * rank from being reached with token sessions, and it never reads a load.
+   */
+  minimumCompletedSets: number;
 }
 
+export type RenaissanceRankId = RenaissanceRankDefinition['id'];
+
 /**
- * Stable rank ladder. Both requirements are intentionally based on attendance:
- * completed sessions reward participation, while distinct active weeks reward
- * consistency without encouraging consecutive-day training.
+ * Stable rank ladder. Every requirement is about showing up and doing the
+ * work, never about the load: counted sessions reward participation, distinct
+ * active weeks reward consistency without encouraging consecutive-day
+ * training, and from Maestro a total of completed work sets asks that those
+ * sessions held real training. A reached rank is kept for good
+ * (`RANK_REACHED`), so a rank once shown is never taken back.
  */
 export const RENAISSANCE_RANK_DEFINITIONS = [
   {
@@ -120,6 +133,7 @@ export const RENAISSANCE_RANK_DEFINITIONS = [
     description: 'Your place in the training ledger begins here.',
     minimumSessions: 0,
     minimumActiveWeeks: 0,
+    minimumCompletedSets: 0,
   },
   {
     id: 'APPRENTICE',
@@ -127,6 +141,7 @@ export const RENAISSANCE_RANK_DEFINITIONS = [
     description: 'Learning the craft through regular practice.',
     minimumSessions: 5,
     minimumActiveWeeks: 3,
+    minimumCompletedSets: 0,
   },
   {
     id: 'ARTISAN',
@@ -134,6 +149,7 @@ export const RENAISSANCE_RANK_DEFINITIONS = [
     description: 'Building a dependable training practice.',
     minimumSessions: 15,
     minimumActiveWeeks: 8,
+    minimumCompletedSets: 0,
   },
   {
     id: 'MAESTRO',
@@ -141,6 +157,7 @@ export const RENAISSANCE_RANK_DEFINITIONS = [
     description: 'Sustaining purposeful work across many weeks.',
     minimumSessions: 30,
     minimumActiveWeeks: 16,
+    minimumCompletedSets: 100,
   },
   {
     id: 'VIRTUOSO',
@@ -148,6 +165,7 @@ export const RENAISSANCE_RANK_DEFINITIONS = [
     description: 'Showing enduring discipline through repeated seasons.',
     minimumSessions: 60,
     minimumActiveWeeks: 32,
+    minimumCompletedSets: 250,
   },
   {
     id: 'LAUREATE',
@@ -155,16 +173,138 @@ export const RENAISSANCE_RANK_DEFINITIONS = [
     description: 'A lasting training practice recorded in the ledger.',
     minimumSessions: 100,
     minimumActiveWeeks: 52,
+    minimumCompletedSets: 500,
   },
 ] as const satisfies readonly RenaissanceRankDefinition[];
 
 export interface RenaissanceRankProgress {
+  /** The highest rank met now or reached before, whichever is higher. */
   currentRank: RenaissanceRankDefinition;
   nextRank: RenaissanceRankDefinition | null;
+  /** Counted sessions: completed, with at least one completed work set. */
   completedSessions: number;
   activeWeeks: number;
+  /** Completed work sets, warm-ups excluded. */
+  completedSets: number;
   sessionsRemaining: number;
   activeWeeksRemaining: number;
+  /** Zero when the next rank asks for no sets or they are already done. */
+  setsRemaining: number;
+}
+
+/** What a rank is measured from, as the analytics projection keeps it. */
+export interface RenaissanceRankInputs {
+  completedSessions: number;
+  activeWeeks: number;
+  completedSets: number;
+}
+
+/** Whether these totals meet every requirement of a rank. */
+export function meetsRenaissanceRank(
+  rank: RenaissanceRankDefinition,
+  inputs: RenaissanceRankInputs,
+): boolean {
+  return (
+    inputs.completedSessions >= rank.minimumSessions &&
+    inputs.activeWeeks >= rank.minimumActiveWeeks &&
+    inputs.completedSets >= rank.minimumCompletedSets
+  );
+}
+
+function rankIndex(id: RenaissanceRankId | null | undefined): number {
+  if (!id) return 0;
+  return Math.max(
+    0,
+    RENAISSANCE_RANK_DEFINITIONS.findIndex(rank => rank.id === id),
+  );
+}
+
+/** Whichever of two ranks is higher on the ladder; null when both are. */
+export function higherRenaissanceRank(
+  a: RenaissanceRankId | null | undefined,
+  b: RenaissanceRankId | null | undefined,
+): RenaissanceRankId | null {
+  if (!a) return b ?? null;
+  if (!b) return a;
+  return rankIndex(a) >= rankIndex(b) ? a : b;
+}
+
+/**
+ * The rank the totals reach, never lower than `reached`, the highest rank
+ * already recorded for the account: a rank that was reached is kept, whatever
+ * a later replay of the history (a removed past workout, another time zone)
+ * counts. The ladder is climbed in order, so a later rank whose requirement
+ * happens to be met never skips an earlier one that is not.
+ */
+export function renaissanceRankProgress(
+  inputs: RenaissanceRankInputs,
+  reached?: RenaissanceRankId | null,
+): RenaissanceRankProgress {
+  let metIndex = 0;
+  for (let index = 1; index < RENAISSANCE_RANK_DEFINITIONS.length; index += 1) {
+    if (!meetsRenaissanceRank(RENAISSANCE_RANK_DEFINITIONS[index], inputs)) {
+      break;
+    }
+    metIndex = index;
+  }
+  const currentIndex = Math.max(metIndex, rankIndex(reached));
+  const currentRank: RenaissanceRankDefinition =
+    RENAISSANCE_RANK_DEFINITIONS[currentIndex];
+  const nextRank: RenaissanceRankDefinition | null =
+    RENAISSANCE_RANK_DEFINITIONS[currentIndex + 1] ?? null;
+  const remaining = (target: number | undefined, value: number) =>
+    nextRank && target ? Math.max(0, target - value) : 0;
+
+  return {
+    currentRank,
+    nextRank,
+    completedSessions: inputs.completedSessions,
+    activeWeeks: inputs.activeWeeks,
+    completedSets: inputs.completedSets,
+    sessionsRemaining: remaining(
+      nextRank?.minimumSessions,
+      inputs.completedSessions,
+    ),
+    activeWeeksRemaining: remaining(
+      nextRank?.minimumActiveWeeks,
+      inputs.activeWeeks,
+    ),
+    setsRemaining: remaining(nextRank?.minimumCompletedSets, inputs.completedSets),
+  };
+}
+
+/** Every rank from Initiate through `id`, in ladder order. */
+export function renaissanceRanksThrough(
+  id: RenaissanceRankId,
+): RenaissanceRankDefinition[] {
+  return RENAISSANCE_RANK_DEFINITIONS.slice(0, rankIndex(id) + 1);
+}
+
+/**
+ * The `RANK_REACHED` training event: one per account and rank, written the
+ * first time the rank's requirements are met and removed only with the
+ * account. It carries no session, so nothing that undoes a session's facts
+ * reaches it.
+ */
+export interface RankReachedEventPayload {
+  schemaVersion: 1;
+  rankId: RenaissanceRankId;
+  /** True when it was recognized from history rather than reached live. */
+  backfilled: boolean;
+}
+
+export function rankReachedEventKey(
+  userId: string,
+  rankId: RenaissanceRankId,
+): string {
+  return `rank:${userId}:${rankId}:v1`;
+}
+
+export function isRenaissanceRankId(value: unknown): value is RenaissanceRankId {
+  return (
+    typeof value === 'string' &&
+    RENAISSANCE_RANK_DEFINITIONS.some(rank => rank.id === value)
+  );
 }
 
 /**
